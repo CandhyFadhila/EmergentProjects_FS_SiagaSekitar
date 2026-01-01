@@ -56,14 +56,11 @@ async function handleRegister(request) {
       }
     });
 
-    // Update home_point using raw query with proper type casting
+    // Update home_point using raw query
     await prisma.$executeRawUnsafe(
       `UPDATE users 
-       SET home_point = ST_SetSRID(ST_MakePoint($1::float, $2::float), 4326)
-       WHERE id = $3::uuid`,
-      user.homeLng,
-      user.homeLat,
-      user.id
+       SET home_point = ST_SetSRID(ST_MakePoint(${user.homeLng}, ${user.homeLat}), 4326)
+       WHERE id = '${user.id}'`
     );
 
     return NextResponse.json({
