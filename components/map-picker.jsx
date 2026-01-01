@@ -203,7 +203,7 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
 
   // Update marker position when lat/lng changes
   useEffect(() => {
-    if (markerRef.current && lat && lng) {
+    if (markerRef.current && lat && lng && mapInstanceRef.current) {
       const newLatLng = L.latLng(lat, lng);
       markerRef.current.setLatLng(newLatLng);
       
@@ -216,8 +216,15 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
         warningCircleRef.current.setRadius(warningRadius || 0);
       }
 
-      // Don't auto-pan the map, let user control the view
-      // Only pan on initial load or if marker is way off screen
+      // Smart pan: Only pan if marker is outside current view
+      const bounds = mapInstanceRef.current.getBounds();
+      if (!bounds.contains(newLatLng)) {
+        // Marker is off-screen, pan to show it
+        mapInstanceRef.current.panTo(newLatLng, {
+          animate: true,
+          duration: 0.5
+        });
+      }
     }
   }, [lat, lng, dangerRadius, warningRadius]);
 
