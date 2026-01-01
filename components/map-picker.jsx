@@ -216,10 +216,8 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
         warningCircleRef.current.setRadius(warningRadius || 0);
       }
 
-      // Pan map to new location
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.panTo(newLatLng);
-      }
+      // Don't auto-pan the map, let user control the view
+      // Only pan on initial load or if marker is way off screen
     }
   }, [lat, lng, dangerRadius, warningRadius]);
 
