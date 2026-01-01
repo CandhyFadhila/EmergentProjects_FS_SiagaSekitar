@@ -88,10 +88,10 @@ export default function AdminUsersPage() {
           provinsi: data.user.provinsi || ''
         });
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     }
   };
 
@@ -106,14 +106,14 @@ export default function AdminUsersPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         setDetailDialog({ open: false, user: null, isEditing: false });
         fetchUsers();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     }
   };
 
@@ -123,13 +123,13 @@ export default function AdminUsersPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         fetchUsers();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     } finally {
       setDeleteDialog({ open: false, userId: null });
     }
@@ -141,12 +141,12 @@ export default function AdminUsersPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     } finally {
       setResetDialog({ open: false, userId: null });
     }
