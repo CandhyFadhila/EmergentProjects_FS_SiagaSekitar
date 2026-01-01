@@ -1040,6 +1040,9 @@ export async function GET(request) {
     if (path === 'users') {
       return handleGetUsers(request, user);
     }
+    if (segments[0] === 'users' && segments[2] === 'detail') {
+      return handleGetUserDetail(request, user, segments[1]);
+    }
     if (path === 'categories') {
       return handleGetCategories(request, user);
     }
