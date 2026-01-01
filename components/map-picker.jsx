@@ -18,13 +18,58 @@ L.Icon.Default.mergeOptions({
 const DEFAULT_LAT = -7.6298;
 const DEFAULT_LNG = 111.5239;
 
-export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, warningRadius, readonly = false }) {
+// Reverse geocoding function using Nominatim
+const reverseGeocode = async (lat, lng) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=id`,
+      {
+        headers: {
+          'User-Agent': 'SiagaSekitar/1.0'
+        }
+      }
+    );
+    const data = await response.json();
+    
+    if (data && data.address) {
+      const address = data.address;
+      return {
+        kelurahan: address.village || address.suburb || address.neighbourhood || address.hamlet || '',
+        kecamatan: address.county || address.municipality || address.city_district || '',
+        kota: address.city || address.town || address.city_district || address.county || '',
+        provinsi: address.state || ''
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Reverse geocoding error:', error);
+    return null;
+  }
+};
+
+export default function MapPicker({ lat, lng, onLocationChange, onAddressChange, dangerRadius, warningRadius, readonly = false }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
   const dangerCircleRef = useRef(null);
   const warningCircleRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+
+  const handleLocationUpdate = async (newLat, newLng, shouldFetchAddress = true) => {
+    // Update coordinates
+    onLocationChange?.(newLat, newLng);
+    
+    // Fetch and update address if callback provided
+    if (shouldFetchAddress && onAddressChange) {
+      setIsLoadingAddress(true);
+      const addressData = await reverseGeocode(newLat, newLng);
+      if (addressData) {
+        onAddressChange(addressData);
+      }
+      setIsLoadingAddress(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current || isLoaded) return;
@@ -40,7 +85,7 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
     // Add search control
     const provider = new OpenStreetMapProvider({
       params: {
-        countrycodes: 'id', // Limit to Indonesia
+        countrycodes: 'id',
         addressdetails: 1,
       },
     });
@@ -48,7 +93,7 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
     const searchControl = new GeoSearchControl({
       provider: provider,
       style: 'bar',
-      showMarker: false, // We'll handle marker ourselves
+      showMarker: false,
       showPopup: false,
       autoClose: true,
       retainZoomLevel: false,
@@ -91,7 +136,7 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
     if (!readonly) {
       marker.on('dragend', function(e) {
         const position = e.target.getLatLng();
-        onLocationChange?.(position.lat, position.lng);
+        handleLocationUpdate(position.lat, position.lng, true);
         
         // Update circles
         if (dangerCircleRef.current) {
@@ -105,7 +150,7 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
       // Handle map click
       map.on('click', function(e) {
         marker.setLatLng(e.latlng);
-        onLocationChange?.(e.latlng.lat, e.latlng.lng);
+        handleLocationUpdate(e.latlng.lat, e.latlng.lng, true);
         
         // Update circles
         if (dangerCircleRef.current) {
@@ -118,10 +163,24 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
 
       // Handle search result
       map.on('geosearch/showlocation', function(e) {
-        const { x, y } = e.location;
+        const { x, y, raw } = e.location;
         const newLatLng = L.latLng(y, x);
         
         marker.setLatLng(newLatLng);
+        
+        // Extract address from search result
+        if (raw && raw.address && onAddressChange) {
+          const address = raw.address;
+          const addressData = {
+            kelurahan: address.village || address.suburb || address.neighbourhood || address.hamlet || '',
+            kecamatan: address.county || address.municipality || address.city_district || '',
+            kota: address.city || address.town || address.city_district || address.county || '',
+            provinsi: address.state || ''
+          };
+          onAddressChange(addressData);
+        }
+        
+        // Only update coordinates, address already updated from search
         onLocationChange?.(y, x);
         
         // Update circles
@@ -170,9 +229,16 @@ export default function MapPicker({ lat, lng, onLocationChange, dangerRadius, wa
         ref={mapRef} 
         className="w-full h-[400px] rounded-lg border border-border relative z-0"
       />
-      <p className="text-xs text-muted-foreground mt-2">
-        💡 Gunakan kotak pencarian di peta untuk mencari alamat dengan mudah
-      </p>
+      <div className="flex items-center justify-between mt-2">
+        <p className="text-xs text-muted-foreground">
+          💡 Gunakan kotak pencarian di peta untuk mencari alamat dengan mudah
+        </p>
+        {isLoadingAddress && (
+          <p className="text-xs text-blue-600 font-medium">
+            🔍 Mencari alamat...
+          </p>
+        )}
+      </div>
     </div>
   );
 }
