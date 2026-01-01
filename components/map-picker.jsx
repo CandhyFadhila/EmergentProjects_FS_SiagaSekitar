@@ -55,13 +55,19 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
   const warningCircleRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const isUserInteractionRef = useRef(false); // Track if update is from user action
 
-  const handleLocationUpdate = async (newLat, newLng, shouldFetchAddress = true) => {
+  const handleLocationUpdate = async (newLat, newLng, isFromUserAction = false) => {
+    // Set flag to prevent smart pan during user interaction
+    if (isFromUserAction) {
+      isUserInteractionRef.current = true;
+    }
+
     // Update coordinates
     onLocationChange?.(newLat, newLng);
     
     // Fetch and update address if callback provided
-    if (shouldFetchAddress && onAddressChange) {
+    if (isFromUserAction && onAddressChange) {
       setIsLoadingAddress(true);
       const addressData = await reverseGeocode(newLat, newLng);
       if (addressData) {
@@ -69,6 +75,11 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
       }
       setIsLoadingAddress(false);
     }
+
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isUserInteractionRef.current = false;
+    }, 100);
   };
 
   useEffect(() => {
