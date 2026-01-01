@@ -57,11 +57,14 @@ async function handleRegister(request) {
     });
 
     // Update home_point using raw query
-    await prisma.$executeRaw`
-      UPDATE users 
-      SET home_point = ST_SetSRID(ST_MakePoint(${user.homeLng}, ${user.homeLat}), 4326)
-      WHERE id = ${user.id}::uuid
-    `;
+    await prisma.$executeRawUnsafe(
+      `UPDATE users 
+       SET home_point = ST_SetSRID(ST_MakePoint($1, $2), 4326)
+       WHERE id = $3`,
+      user.homeLng,
+      user.homeLat,
+      user.id
+    );
 
     return NextResponse.json({
       message: 'Registrasi berhasil',
