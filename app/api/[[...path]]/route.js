@@ -1125,6 +1125,9 @@ export async function PUT(request) {
     }
 
     // Route handlers
+    if (segments[0] === 'users' && segments[2] === 'update') {
+      return handleUpdateUserLocation(request, user, segments[1]);
+    }
     if (segments[0] === 'categories' && segments.length === 2) {
       return handleUpdateCategory(request, user, segments[1]);
     }
