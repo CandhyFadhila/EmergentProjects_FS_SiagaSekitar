@@ -438,11 +438,11 @@ async function handleUpdateEvent(request, user, eventId) {
 
     // Update location_point if coordinates changed
     if (locationLat && locationLng) {
-      await prisma.$executeRaw`
-        UPDATE disaster_events 
-        SET location_point = ST_SetSRID(ST_MakePoint(${parseFloat(locationLng)}, ${parseFloat(locationLat)}), 4326)
-        WHERE id = ${eventId}::uuid
-      `;
+      await prisma.$executeRawUnsafe(
+        `UPDATE disaster_events 
+         SET location_point = ST_SetSRID(ST_MakePoint(${parseFloat(locationLng)}, ${parseFloat(locationLat)}), 4326)
+         WHERE id = '${eventId}'`
+      );
     }
 
     return NextResponse.json({ message: 'Event berhasil diupdate', event });
