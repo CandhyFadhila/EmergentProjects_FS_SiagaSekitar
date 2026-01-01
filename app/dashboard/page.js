@@ -6,8 +6,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Bell, MapPin } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Badge } from '@/components/ui/badge';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -53,57 +52,57 @@ export default function UserDashboard() {
     <div className="flex h-screen bg-background">
       <Sidebar userRole="USER" />
       
-      <div className=\"flex-1 overflow-y-auto\">
-        <div className=\"p-8\">
-          <div className=\"mb-8\">
-            <h1 className=\"text-3xl font-bold mb-2\">Dashboard</h1>
-            <p className=\"text-muted-foreground\">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+            <p className="text-muted-foreground">
               Selamat datang, {session?.user?.name}
             </p>
           </div>
 
-          <div className=\"grid grid-cols-1 md:grid-cols-3 gap-6 mb-8\">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium\">Kejadian Terdekat</CardTitle>
-                <AlertTriangle className=\"h-4 w-4 text-muted-foreground\" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Kejadian Terdekat</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{stats?.totalNearbyEvents || 0}</div>
-                <p className=\"text-xs text-muted-foreground\">
+                <div className="text-2xl font-bold">{stats?.totalNearbyEvents || 0}</div>
+                <p className="text-xs text-muted-foreground">
                   Dalam 30 hari terakhir
                 </p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium\">Notifikasi Belum Dibaca</CardTitle>
-                <Bell className=\"h-4 w-4 text-muted-foreground\" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Notifikasi Belum Dibaca</CardTitle>
+                <Bell className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{stats?.unreadNotifications || 0}</div>
-                <p className=\"text-xs text-muted-foreground\">
+                <div className="text-2xl font-bold">{stats?.unreadNotifications || 0}</div>
+                <p className="text-xs text-muted-foreground">
                   Notifikasi baru
                 </p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium\">Lokasi Anda</CardTitle>
-                <MapPin className=\"h-4 w-4 text-muted-foreground\" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Lokasi Anda</CardTitle>
+                <MapPin className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-sm font-medium\">Terdaftar</div>
-                <p className=\"text-xs text-muted-foreground\">
+                <div className="text-sm font-medium">Terdaftar</div>
+                <p className="text-xs text-muted-foreground">
                   Klik menu Lokasi Rumah untuk update
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8\">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <Card>
               <CardHeader>
                 <CardTitle>Distribusi Kejadian per Kategori</CardTitle>
@@ -111,17 +110,17 @@ export default function UserDashboard() {
               </CardHeader>
               <CardContent>
                 {stats?.eventsByCategory?.length > 0 ? (
-                  <ResponsiveContainer width=\"100%\" height={300}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
                         data={stats.eventsByCategory}
-                        cx=\"50%\"
-                        cy=\"50%\"
+                        cx="50%"
+                        cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                         outerRadius={80}
-                        fill=\"#8884d8\"
-                        dataKey=\"count\"
+                        fill="#8884d8"
+                        dataKey="count"
                       >
                         {stats.eventsByCategory.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -131,7 +130,7 @@ export default function UserDashboard() {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className=\"h-[300px] flex items-center justify-center text-muted-foreground\">
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                     Tidak ada kejadian di sekitar Anda
                   </div>
                 )}
@@ -145,16 +144,16 @@ export default function UserDashboard() {
               </CardHeader>
               <CardContent>
                 {stats?.recentEvents?.length > 0 ? (
-                  <div className=\"space-y-4\">
+                  <div className="space-y-4">
                     {stats.recentEvents.map((event, index) => (
-                      <div key={index} className=\"flex items-start gap-3 pb-4 border-b last:border-0\">
-                        <AlertTriangle className=\"h-5 w-5 text-orange-500 mt-0.5\" />
-                        <div className=\"flex-1\">
-                          <h4 className=\"font-medium text-sm\">{event.title}</h4>
-                          <p className=\"text-xs text-muted-foreground mt-1\">
+                      <div key={index} className="flex items-start gap-3 pb-4 border-b last:border-0">
+                        <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm">{event.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">
                             {event.category.name} • {format(new Date(event.eventTime), 'dd MMM yyyy HH:mm', { locale: id })}
                           </p>
-                          <p className=\"text-xs text-muted-foreground mt-1\">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {event.kelurahan}, {event.kota}
                           </p>
                         </div>
@@ -162,7 +161,7 @@ export default function UserDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <div className=\"h-[300px] flex items-center justify-center text-muted-foreground\">
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                     Tidak ada kejadian terbaru
                   </div>
                 )}
@@ -175,14 +174,14 @@ export default function UserDashboard() {
               <CardTitle>Informasi Penting</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className=\"space-y-2\">
-                <p className=\"text-sm\">
+              <div className="space-y-2">
+                <p className="text-sm">
                   ✅ Anda akan menerima notifikasi untuk kejadian bencana dalam radius peringatan dari lokasi rumah Anda.
                 </p>
-                <p className=\"text-sm\">
+                <p className="text-sm">
                   📍 Pastikan lokasi rumah Anda sudah diatur dengan benar di menu <strong>Lokasi Rumah</strong>.
                 </p>
-                <p className=\"text-sm\">
+                <p className="text-sm">
                   🔔 Periksa notifikasi secara berkala untuk mendapatkan informasi terbaru.
                 </p>
               </div>
