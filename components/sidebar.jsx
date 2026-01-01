@@ -49,7 +49,10 @@ export default function Sidebar({ userRole }) {
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+          // Fix: untuk /profile, hanya exact match. Untuk yang lain, bisa exact atau startsWith
+          const isActive = item.href === '/profile' 
+            ? pathname === item.href 
+            : (pathname === item.href || pathname.startsWith(item.href + '/'));
           
           return (
             <Link
