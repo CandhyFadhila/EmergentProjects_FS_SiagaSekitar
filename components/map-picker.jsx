@@ -225,10 +225,25 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
     };
   }, []);
 
-  // Update marker position when lat/lng changes
+  // Update marker position when lat/lng changes (from external source only)
   useEffect(() => {
+    // Skip if this is a user interaction (marker already moved by user)
+    if (isUserInteractionRef.current) {
+      return;
+    }
+
     if (markerRef.current && lat && lng && mapInstanceRef.current) {
       const newLatLng = L.latLng(lat, lng);
+      const currentLatLng = markerRef.current.getLatLng();
+      
+      // Check if coordinates actually changed (avoid unnecessary updates)
+      const latChanged = Math.abs(currentLatLng.lat - lat) > 0.000001;
+      const lngChanged = Math.abs(currentLatLng.lng - lng) > 0.000001;
+      
+      if (!latChanged && !lngChanged) {
+        return; // No change, skip update
+      }
+      
       markerRef.current.setLatLng(newLatLng);
       
       if (dangerCircleRef.current) {
@@ -243,7 +258,6 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
       // Smart pan: Only pan if marker is outside current view
       const bounds = mapInstanceRef.current.getBounds();
       if (!bounds.contains(newLatLng)) {
-        // Marker is off-screen, pan to show it
         mapInstanceRef.current.panTo(newLatLng, {
           animate: true,
           duration: 0.5
