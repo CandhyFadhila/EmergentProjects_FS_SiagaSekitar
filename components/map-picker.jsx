@@ -182,6 +182,9 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
         const { x, y, raw } = e.location;
         const newLatLng = L.latLng(y, x);
         
+        // Set user interaction flag
+        isUserInteractionRef.current = true;
+        
         marker.setLatLng(newLatLng);
         
         // Extract address from search result
@@ -206,6 +209,11 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
         if (warningCircleRef.current) {
           warningCircleRef.current.setLatLng(newLatLng);
         }
+
+        // Reset flag
+        setTimeout(() => {
+          isUserInteractionRef.current = false;
+        }, 100);
       });
     }
 
