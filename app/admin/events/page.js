@@ -238,31 +238,54 @@ export default function AdminEventsPage() {
       header: 'Aksi',
       className: 'text-right',
       cell: (row) => (
-        <div className="flex justify-end gap-2">
-          {row.status === 'DRAFT' && (
-            <Button
-              size="sm"
-              variant="default"
-              onClick={() => setPublishDialog({ open: true, eventId: row.id })}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          )}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleOpenDialog('edit', row)}
-          >
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => setDeleteDialog({ open: true, eventId: row.id })}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
+        <TooltipProvider>
+          <div className="flex justify-end gap-2">
+            {row.status === 'DRAFT' && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => setPublishDialog({ open: true, eventId: row.id })}
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Publish & Kirim Notifikasi</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleOpenDialog('edit', row)}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit Pengumuman</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setDeleteDialog({ open: true, eventId: row.id })}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Hapus Pengumuman</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       )
     }
   ];
