@@ -23,8 +23,8 @@ export default function ProfileLocationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    homeLat: -6.2088,
-    homeLng: 106.8456,
+    homeLat: -7.6298,
+    homeLng: 111.5239,
     kelurahan: '',
     kecamatan: '',
     kota: '',
