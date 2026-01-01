@@ -355,13 +355,22 @@ export default function AdminUsersPage() {
                     <div className="space-y-2">
                       <Label>Titik Lokasi Rumah</Label>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Gunakan search box atau klik/drag marker untuk mengubah lokasi
+                        Gunakan search box atau klik/drag marker untuk mengubah lokasi. Alamat akan terisi otomatis!
                       </p>
                       <MapPicker
                         lat={formData.homeLat}
                         lng={formData.homeLng}
                         onLocationChange={(lat, lng) => {
                           setFormData({ ...formData, homeLat: lat, homeLng: lng });
+                        }}
+                        onAddressChange={(addressData) => {
+                          setFormData({ 
+                            ...formData, 
+                            kelurahan: addressData.kelurahan,
+                            kecamatan: addressData.kecamatan,
+                            kota: addressData.kota,
+                            provinsi: addressData.provinsi
+                          });
                         }}
                       />
                     </div>
