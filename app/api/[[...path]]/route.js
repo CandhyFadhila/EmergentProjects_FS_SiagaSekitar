@@ -892,11 +892,11 @@ async function handleUpdateLocation(request, user) {
     });
 
     // Update home_point using raw query
-    await prisma.$executeRaw`
-      UPDATE users 
-      SET home_point = ST_SetSRID(ST_MakePoint(${updated.homeLng}, ${updated.homeLat}), 4326)
-      WHERE id = ${user.id}::uuid
-    `;
+    await prisma.$executeRawUnsafe(
+      `UPDATE users 
+       SET home_point = ST_SetSRID(ST_MakePoint(${updated.homeLng}, ${updated.homeLat}), 4326)
+       WHERE id = '${user.id}'`
+    );
 
     return NextResponse.json({ message: 'Lokasi berhasil diupdate', user: updated });
   } catch (error) {
