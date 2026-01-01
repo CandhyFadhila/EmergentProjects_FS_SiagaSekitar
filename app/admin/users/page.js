@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
       setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast({ title: 'Error', description: 'Gagal memuat data users', variant: 'destructive' });
+      showToast.error('Error', 'Gagal memuat data users');
     } finally {
       setLoading(false);
     }
