@@ -23,12 +23,12 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     fullName: '',
-    homeLat: -6.2088,
-    homeLng: 106.8456,
+    homeLat: -7.6298,
+    homeLng: 111.5239,
     kelurahan: '',
     kecamatan: '',
     kota: '',
-    provinsi: 'DKI Jakarta'
+    provinsi: 'Jawa Timur'
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
