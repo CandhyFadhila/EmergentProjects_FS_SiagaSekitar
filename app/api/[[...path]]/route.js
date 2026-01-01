@@ -77,6 +77,86 @@ async function handleRegister(request) {
   }
 }
 
+// GET /api/users/:id/detail - Admin only
+async function handleGetUserDetail(request, user, userId) {
+  if (user.role !== 'SSO') return forbidden();
+
+  try {
+    const userDetail = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
+        isActive: true,
+        homeLat: true,
+        homeLng: true,
+        kelurahan: true,
+        kecamatan: true,
+        kota: true,
+        provinsi: true,
+        lastLoginAt: true,
+        createdAt: true
+      }
+    });
+
+    if (!userDetail) {
+      return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 404 });
+    }
+
+    return NextResponse.json({ user: userDetail });
+  } catch (error) {
+    console.error('Get user detail error:', error);
+    return NextResponse.json({ error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
+// PUT /api/users/:id/update - Admin only (update location only)
+async function handleUpdateUserLocation(request, user, userId) {
+  if (user.role !== 'SSO') return forbidden();
+
+  try {
+    const body = await request.json();
+    const { homeLat, homeLng, kelurahan, kecamatan, kota, provinsi } = body;
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        homeLat: parseFloat(homeLat),
+        homeLng: parseFloat(homeLng),
+        kelurahan,
+        kecamatan,
+        kota,
+        provinsi
+      }
+    });
+
+    // Update home_point using raw query
+    await prisma.$executeRawUnsafe(
+      `UPDATE users 
+       SET home_point = ST_SetSRID(ST_MakePoint(${updated.homeLng}, ${updated.homeLat}), 4326)
+       WHERE id = '${userId}'`
+    );
+
+    // Log audit
+    await prisma.auditLog.create({
+      data: {
+        actorId: user.id,
+        action: 'UPDATE_USER_LOCATION',
+        entityType: 'USER',
+        entityId: userId,
+        metadata: { updatedBy: 'admin' }
+      }
+    });
+
+    return NextResponse.json({ message: 'Data user berhasil diupdate', user: updated });
+  } catch (error) {
+    console.error('Update user location error:', error);
+    return NextResponse.json({ error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
 // GET /api/users - Admin only
 async function handleGetUsers(request, user) {
   if (user.role !== 'SSO') return forbidden();
