@@ -160,16 +160,21 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
 
       // Handle map click
       map.on('click', function(e) {
-        marker.setLatLng(e.latlng);
-        handleLocationUpdate(e.latlng.lat, e.latlng.lng, true);
+        const clickedLatLng = e.latlng;
+        
+        // Immediately update marker position (visual feedback)
+        marker.setLatLng(clickedLatLng);
         
         // Update circles
         if (dangerCircleRef.current) {
-          dangerCircleRef.current.setLatLng(e.latlng);
+          dangerCircleRef.current.setLatLng(clickedLatLng);
         }
         if (warningCircleRef.current) {
-          warningCircleRef.current.setLatLng(e.latlng);
+          warningCircleRef.current.setLatLng(clickedLatLng);
         }
+        
+        // Notify parent component
+        handleLocationUpdate(clickedLatLng.lat, clickedLatLng.lng, true);
       });
 
       // Handle search result
