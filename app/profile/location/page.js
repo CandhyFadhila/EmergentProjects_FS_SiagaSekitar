@@ -120,13 +120,22 @@ export default function ProfileLocationPage() {
                 <div className="space-y-2">
                   <Label>Titik Lokasi</Label>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Klik pada peta atau geser marker untuk menentukan lokasi rumah Anda
+                    Klik pada peta atau geser marker untuk menentukan lokasi rumah Anda. Alamat akan terisi otomatis!
                   </p>
                   <MapPicker
                     lat={formData.homeLat}
                     lng={formData.homeLng}
                     onLocationChange={(lat, lng) => {
                       setFormData({ ...formData, homeLat: lat, homeLng: lng });
+                    }}
+                    onAddressChange={(addressData) => {
+                      setFormData({ 
+                        ...formData, 
+                        kelurahan: addressData.kelurahan,
+                        kecamatan: addressData.kecamatan,
+                        kota: addressData.kota,
+                        provinsi: addressData.provinsi
+                      });
                     }}
                   />
                 </div>
