@@ -155,13 +155,22 @@ export default function RegisterPage() {
               <div>
                 <Label className="text-base font-semibold">Lokasi Rumah</Label>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Klik pada peta atau geser marker untuk menentukan lokasi rumah Anda
+                  Klik pada peta atau geser marker untuk menentukan lokasi rumah Anda. Alamat akan terisi otomatis!
                 </p>
                 <MapPicker
                   lat={formData.homeLat}
                   lng={formData.homeLng}
                   onLocationChange={(lat, lng) => {
                     setFormData({ ...formData, homeLat: lat, homeLng: lng });
+                  }}
+                  onAddressChange={(addressData) => {
+                    setFormData({ 
+                      ...formData, 
+                      kelurahan: addressData.kelurahan,
+                      kecamatan: addressData.kecamatan,
+                      kota: addressData.kota,
+                      provinsi: addressData.provinsi
+                    });
                   }}
                 />
               </div>
