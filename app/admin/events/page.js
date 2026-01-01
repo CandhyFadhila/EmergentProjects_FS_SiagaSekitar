@@ -384,7 +384,7 @@ export default function AdminEventsPage() {
             <div className="space-y-2">
               <Label>Lokasi Kejadian</Label>
               <p className="text-sm text-muted-foreground mb-2">
-                Klik pada peta atau geser marker untuk menentukan titik kejadian
+                Klik pada peta atau geser marker untuk menentukan titik kejadian. Alamat akan terisi otomatis!
               </p>
               <MapPicker
                 lat={formData.locationLat}
@@ -393,6 +393,14 @@ export default function AdminEventsPage() {
                 warningRadius={formData.warningRadiusM}
                 onLocationChange={(lat, lng) => {
                   setFormData({ ...formData, locationLat: lat, locationLng: lng });
+                }}
+                onAddressChange={(addressData) => {
+                  setFormData({ 
+                    ...formData, 
+                    kelurahan: addressData.kelurahan,
+                    kecamatan: addressData.kecamatan,
+                    kota: addressData.kota
+                  });
                 }}
               />
             </div>
