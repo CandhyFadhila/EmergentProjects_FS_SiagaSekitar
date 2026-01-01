@@ -386,11 +386,11 @@ async function handleCreateEvent(request, user) {
     });
 
     // Update location_point using raw query
-    await prisma.$executeRaw`
-      UPDATE disaster_events 
-      SET location_point = ST_SetSRID(ST_MakePoint(${event.locationLng}, ${event.locationLat}), 4326)
-      WHERE id = ${event.id}::uuid
-    `;
+    await prisma.$executeRawUnsafe(
+      `UPDATE disaster_events 
+       SET location_point = ST_SetSRID(ST_MakePoint(${event.locationLng}, ${event.locationLat}), 4326)
+       WHERE id = '${event.id}'`
+    );
 
     return NextResponse.json({ message: 'Event berhasil dibuat', event });
   } catch (error) {
