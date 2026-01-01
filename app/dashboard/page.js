@@ -46,12 +46,12 @@ export default function UserDashboard() {
   };
 
   if (status === 'loading' || loading) {
-    return <div className=\"flex items-center justify-center h-screen\">Memuat...</div>;
+    return <div className="flex items-center justify-center h-screen">Memuat...</div>;
   }
 
   return (
-    <div className=\"flex h-screen bg-background\">
-      <Sidebar userRole=\"USER\" />
+    <div className="flex h-screen bg-background">
+      <Sidebar userRole="USER" />
       
       <div className=\"flex-1 overflow-y-auto\">
         <div className=\"p-8\">
