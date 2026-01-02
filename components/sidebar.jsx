@@ -74,6 +74,9 @@ function SidebarContent({ userRole, pathname, onLinkClick }) {
       </nav>
 
       <div className="p-4 border-t border-border">
+        <div className="flex items-center justify-between mb-2">
+          <ThemeToggle />
+        </div>
         <Button
           onClick={() => signOut({ callbackUrl: '/login' })}
           variant="ghost"
