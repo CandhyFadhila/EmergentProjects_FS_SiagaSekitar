@@ -41,10 +41,10 @@ export default function AdminCategoriesPage() {
     fetchCategories();
   }, [status, session, router]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (search = '') => {
     setLoading(true);
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch(`/api/categories?search=${search}`);
       const data = await response.json();
       setCategories(data.categories || []);
     } catch (error) {
