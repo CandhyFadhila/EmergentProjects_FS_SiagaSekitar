@@ -20,7 +20,6 @@ import { Switch } from '@/components/ui/switch';
 export default function AdminCategoriesPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState({ open: false, mode: 'create', data: null });
