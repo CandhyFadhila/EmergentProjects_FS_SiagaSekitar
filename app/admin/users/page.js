@@ -156,25 +156,28 @@ export default function AdminUsersPage() {
     {
       header: 'Nama',
       accessorKey: 'fullName',
-      cell: (row) => <span className="font-medium">{row.fullName}</span>
+      cell: (row) => <span className={`font-medium ${row.deletedAt ? 'opacity-40' : ''}`}>{row.fullName}</span>
     },
     {
       header: 'Email',
-      accessorKey: 'email'
+      accessorKey: 'email',
+      cell: (row) => <span className={row.deletedAt ? 'opacity-40' : ''}>{row.email}</span>
     },
     {
       header: 'Role',
       accessorKey: 'role',
       cell: (row) => (
-        <Badge variant={row.role === 'SSO' ? 'default' : 'secondary'}>
-          {row.role}
-        </Badge>
+        <div className={row.deletedAt ? 'opacity-40' : ''}>
+          <Badge variant={row.role === 'SSO' ? 'default' : 'secondary'}>
+            {row.role}
+          </Badge>
+        </div>
       )
     },
     {
       header: 'Lokasi',
       cell: (row) => (
-        <div className="text-sm">
+        <div className={`text-sm ${row.deletedAt ? 'opacity-40' : ''}`}>
           {row.kelurahan && <div>{row.kelurahan}</div>}
           {row.kota && <div className="text-muted-foreground">{row.kota}</div>}
         </div>
@@ -183,27 +186,38 @@ export default function AdminUsersPage() {
     {
       header: 'Status',
       cell: (row) => (
-        <Badge variant={row.isActive ? 'default' : 'secondary'}>
-          {row.isActive ? 'Aktif' : 'Nonaktif'}
-        </Badge>
+        <div className={row.deletedAt ? 'opacity-40' : ''}>
+          {row.deletedAt ? (
+            <Badge variant="destructive">Dihapus</Badge>
+          ) : (
+            <Badge variant={row.isActive ? 'default' : 'secondary'}>
+              {row.isActive ? 'Aktif' : 'Nonaktif'}
+            </Badge>
+          )}
+        </div>
       )
     },
     {
       header: 'Last Login',
-      cell: (row) => row.lastLoginAt ? format(new Date(row.lastLoginAt), 'dd MMM yyyy HH:mm', { locale: id }) : '-'
+      cell: (row) => (
+        <span className={row.deletedAt ? 'opacity-40' : ''}>
+          {row.lastLoginAt ? format(new Date(row.lastLoginAt), 'dd MMM yyyy HH:mm', { locale: id }) : '-'}
+        </span>
+      )
     },
     {
       header: 'Aksi',
       className: 'text-right',
       cell: (row) => (
         <TooltipProvider>
-          <div className="flex justify-end gap-2">
+          <div className={`flex justify-end gap-2 ${row.deletedAt ? 'opacity-40 pointer-events-none' : ''}`}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => handleOpenDetail(row.id)}
+                  disabled={!!row.deletedAt}
                 >
                   <Eye className="w-4 h-4" />
                 </Button>
@@ -219,6 +233,7 @@ export default function AdminUsersPage() {
                   size="sm"
                   variant="outline"
                   onClick={() => setResetDialog({ open: true, userId: row.id })}
+                  disabled={!!row.deletedAt}
                 >
                   <RefreshCw className="w-4 h-4" />
                 </Button>
@@ -234,6 +249,7 @@ export default function AdminUsersPage() {
                   size="sm"
                   variant="destructive"
                   onClick={() => setDeleteDialog({ open: true, userId: row.id })}
+                  disabled={!!row.deletedAt}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
