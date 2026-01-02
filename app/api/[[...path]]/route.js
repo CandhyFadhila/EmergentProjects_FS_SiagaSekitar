@@ -277,17 +277,39 @@ async function handleResetPassword(request, user, userId) {
 // GET /api/categories
 async function handleGetCategories(request, user) {
   try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const includeDeleted = user?.role === 'SSO'; // Only admin can see deleted items
+
+    // Build where clause
+    const where = search ? {
+      OR: [
+        { code: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
+      ]
+    } : {};
+
+    // For admin, get all (including deleted), for others only active
+    if (!includeDeleted) {
+      where.deletedAt = null;
+    }
+
     const categories = await prisma.disasterCategory.findMany({
-      where: { deletedAt: null },
+      where,
       select: {
         id: true,
         code: true,
         name: true,
         description: true,
         isActive: true,
+        deletedAt: true,
         createdAt: true
       },
-      orderBy: { name: 'asc' }
+      orderBy: [
+        { deletedAt: 'asc' },  // null first (active items)
+        { name: 'asc' }
+      ]
     });
 
     return NextResponse.json({ categories });
