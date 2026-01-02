@@ -1018,6 +1018,58 @@ async function handleChangePassword(request, user) {
   }
 }
 
+// GET /api/public/recent-disasters - Public access
+async function handleGetRecentDisasters() {
+  try {
+    // Get recent published disasters (limit 10)
+    const disasters = await prisma.disasterEvent.findMany({
+      where: {
+        deletedAt: null,
+        publishedAt: { not: null }
+      },
+      include: {
+        category: true
+      },
+      orderBy: {
+        eventTime: 'desc'
+      },
+      take: 10
+    });
+
+    // Get stats
+    const [totalDisasters, totalCategories, totalUsers] = await Promise.all([
+      prisma.disasterEvent.count({ where: { deletedAt: null, publishedAt: { not: null } } }),
+      prisma.disasterCategory.count({ where: { deletedAt: null } }),
+      prisma.user.count({ where: { deletedAt: null, role: 'USER' } })
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      disasters: disasters.map(d => ({
+        id: d.id,
+        title: d.title,
+        description: d.description,
+        event_time: d.eventTime,
+        severity: d.severity,
+        kelurahan: d.kelurahan,
+        kecamatan: d.kecamatan,
+        kota: d.kota,
+        provinsi: d.provinsi,
+        category_code: d.category.code,
+        category_name: d.category.name
+      })),
+      stats: {
+        total: totalDisasters,
+        categories: totalCategories,
+        users: totalUsers
+      }
+    });
+  } catch (error) {
+    console.error('Error getting recent disasters:', error);
+    return NextResponse.json({ success: false, error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
 // Main router
 export async function GET(request) {
   try {
@@ -1028,6 +1080,9 @@ export async function GET(request) {
     // Public routes
     if (segments.length === 0 || segments[0] === '') {
       return NextResponse.json({ message: 'SiagaSekitar API' });
+    }
+    if (path === 'public/recent-disasters') {
+      return handleGetRecentDisasters();
     }
 
     // Routes that require authentication
