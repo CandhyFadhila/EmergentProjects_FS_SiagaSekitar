@@ -84,14 +84,14 @@ export default function AdminCategoriesPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         setDialog({ open: false, mode: 'create', data: null });
         fetchCategories();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     }
   };
 
@@ -101,13 +101,13 @@ export default function AdminCategoriesPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         fetchCategories();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     } finally {
       setDeleteDialog({ open: false, categoryId: null });
     }
@@ -119,13 +119,13 @@ export default function AdminCategoriesPage() {
       const data = await response.json();
       
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         fetchCategories();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     }
   };
 
