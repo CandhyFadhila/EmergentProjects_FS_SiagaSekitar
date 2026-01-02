@@ -23,6 +23,7 @@ export default function LandingPage() {
   const [recentDisasters, setRecentDisasters] = useState([]);
   const [stats, setStats] = useState({ total: 0, categories: 0, users: 0 });
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchPublicData();
