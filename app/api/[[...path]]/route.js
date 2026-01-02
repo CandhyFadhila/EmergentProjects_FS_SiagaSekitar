@@ -1217,14 +1217,23 @@ export async function POST(request) {
     if (path === 'categories') {
       return handleCreateCategory(request, user);
     }
+    if (segments[0] === 'categories' && segments[2] === 'restore') {
+      return handleRestoreCategory(request, user, segments[1]);
+    }
     if (path === 'events') {
       return handleCreateEvent(request, user);
     }
     if (segments[0] === 'events' && segments[2] === 'publish') {
       return handlePublishEvent(request, user, segments[1]);
     }
+    if (segments[0] === 'events' && segments[2] === 'restore') {
+      return handleRestoreEvent(request, user, segments[1]);
+    }
     if (segments[0] === 'users' && segments[2] === 'reset-password') {
       return handleResetPassword(request, user, segments[1]);
+    }
+    if (segments[0] === 'users' && segments[2] === 'restore') {
+      return handleRestoreUser(request, user, segments[1]);
     }
     if (segments[0] === 'notifications' && segments[2] === 'read') {
       return handleMarkNotificationRead(request, user, segments[1]);
