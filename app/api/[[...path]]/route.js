@@ -298,7 +298,7 @@ async function handleGetCategories(request, user) {
       where.deletedAt = null;
     }
 
-    const categories = await prisma.disasterCategory.findMany({
+    let categories = await prisma.disasterCategory.findMany({
       where,
       select: {
         id: true,
@@ -308,11 +308,17 @@ async function handleGetCategories(request, user) {
         isActive: true,
         deletedAt: true,
         createdAt: true
-      },
-      orderBy: [
-        { deletedAt: 'asc' },  // null first (active items)
-        { name: 'asc' }
-      ]
+      }
+    });
+
+    // Manual sorting: active items first (sorted by name), then deleted items (sorted by name)
+    categories = categories.sort((a, b) => {
+      // If one is deleted and one is not, deleted goes to bottom
+      if (a.deletedAt && !b.deletedAt) return 1;
+      if (!a.deletedAt && b.deletedAt) return -1;
+      
+      // If both have same deletion status, sort by name
+      return a.name.localeCompare(b.name);
     });
 
     return NextResponse.json({ categories });
