@@ -103,7 +103,7 @@ export default function UserDashboard() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             <Card>
               <CardHeader>
                 <CardTitle>Distribusi Kejadian per Kategori</CardTitle>
