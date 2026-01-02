@@ -76,7 +76,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 py-8">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-bold text-center">Daftar Akun Baru</CardTitle>
