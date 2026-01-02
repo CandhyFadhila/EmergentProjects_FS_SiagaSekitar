@@ -177,38 +177,56 @@ export default function AdminCategoriesPage() {
       className: 'text-right',
       cell: (row) => (
         <TooltipProvider>
-          <div className={`flex justify-end gap-2 ${row.deletedAt ? 'opacity-40 pointer-events-none' : ''}`}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleOpenDialog('edit', row)}
-                  disabled={!!row.deletedAt}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit Kategori</p>
-              </TooltipContent>
-            </Tooltip>
+          <div className="flex justify-end gap-2">
+            {row.deletedAt ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRestore(row.id)}
+                    className="text-green-600 hover:text-green-700"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Pulihkan Kategori</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenDialog('edit', row)}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit Kategori</p>
+                  </TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => setDeleteDialog({ open: true, categoryId: row.id })}
-                  disabled={!!row.deletedAt}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Hapus Kategori</p>
-              </TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => setDeleteDialog({ open: true, categoryId: row.id })}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Hapus Kategori</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
           </div>
         </TooltipProvider>
       )
