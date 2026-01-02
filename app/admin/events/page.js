@@ -28,7 +28,6 @@ const MapPicker = dynamic(() => import('@/components/map-picker'), {
 export default function AdminEventsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
