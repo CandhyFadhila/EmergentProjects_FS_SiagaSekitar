@@ -101,11 +101,12 @@ export default function ProfileLocationPage() {
     <div className="flex h-screen bg-background">
       <Sidebar userRole="USER" />
       
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Lokasi Rumah</h1>
-            <p className="text-muted-foreground">Update lokasi rumah untuk menerima notifikasi yang akurat</p>
+      {/* Main Content - with padding top for mobile header */}
+      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+        <div className="p-4 md:p-6 lg:p-8">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Lokasi Rumah</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Update lokasi rumah untuk menerima notifikasi yang akurat</p>
           </div>
 
           <Card>
