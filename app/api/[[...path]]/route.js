@@ -252,6 +252,34 @@ async function handleDeleteUser(request, user, userId) {
   }
 }
 
+// POST /api/users/:id/restore - Admin only
+async function handleRestoreUser(request, user, userId) {
+  if (user.role !== 'SSO') return forbidden();
+
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { deletedAt: null, isActive: true }
+    });
+
+    // Log audit
+    await prisma.auditLog.create({
+      data: {
+        actorId: user.id,
+        action: 'RESTORE_USER',
+        entityType: 'USER',
+        entityId: userId,
+        metadata: {}
+      }
+    });
+
+    return NextResponse.json({ message: 'User berhasil dipulihkan' });
+  } catch (error) {
+    console.error('Restore user error:', error);
+    return NextResponse.json({ error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
 // POST /api/users/:id/reset-password - Admin only
 async function handleResetPassword(request, user, userId) {
   if (user.role !== 'SSO') return forbidden();
