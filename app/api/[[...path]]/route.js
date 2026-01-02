@@ -430,7 +430,7 @@ async function handleGetEvents(request, user) {
       })
     };
 
-    const [events, total] = await Promise.all([
+    let [events, total] = await Promise.all([
       prisma.disasterEvent.findMany({
         where,
         skip,
@@ -449,14 +449,20 @@ async function handleGetEvents(request, user) {
               fullName: true
             }
           }
-        },
-        orderBy: [
-          { deletedAt: 'asc' },  // null first (active events)
-          { eventTime: 'desc' }
-        ]
+        }
       }),
       prisma.disasterEvent.count({ where })
     ]);
+
+    // Manual sorting: active events first (sorted by eventTime desc), then deleted events
+    events = events.sort((a, b) => {
+      // If one is deleted and one is not, deleted goes to bottom
+      if (a.deletedAt && !b.deletedAt) return 1;
+      if (!a.deletedAt && b.deletedAt) return -1;
+      
+      // If both have same deletion status, sort by eventTime desc
+      return new Date(b.eventTime) - new Date(a.eventTime);
+    });
 
     return NextResponse.json({
       events,
