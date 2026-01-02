@@ -177,7 +177,7 @@ async function handleGetUsers(request, user) {
       })
     };
 
-    const [users, total] = await Promise.all([
+    let [users, total] = await Promise.all([
       prisma.user.findMany({
         where,
         skip,
@@ -194,14 +194,20 @@ async function handleGetUsers(request, user) {
           lastLoginAt: true,
           deletedAt: true,
           createdAt: true
-        },
-        orderBy: [
-          { deletedAt: 'asc' },  // null first (active users)
-          { createdAt: 'desc' }
-        ]
+        }
       }),
       prisma.user.count({ where })
     ]);
+
+    // Manual sorting: active users first (sorted by createdAt desc), then deleted users
+    users = users.sort((a, b) => {
+      // If one is deleted and one is not, deleted goes to bottom
+      if (a.deletedAt && !b.deletedAt) return 1;
+      if (!a.deletedAt && b.deletedAt) return -1;
+      
+      // If both have same deletion status, sort by createdAt desc
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
     return NextResponse.json({
       users,
