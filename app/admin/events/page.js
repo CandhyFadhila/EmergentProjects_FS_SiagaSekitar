@@ -62,7 +62,7 @@ export default function AdminEventsPage() {
 
     fetchCategories();
     fetchEvents();
-  }, [status, session, router, pagination.page]);
+  }, [status, session, pagination.page]);
 
   const fetchCategories = async () => {
     try {
