@@ -83,7 +83,7 @@ export default function AdminEventsPage() {
       setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching events:', error);
-      toast({ title: 'Error', description: 'Gagal memuat data events', variant: 'destructive' });
+      showToast.error('Error', 'Gagal memuat data events');
     } finally {
       setLoading(false);
     }
