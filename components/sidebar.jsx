@@ -32,7 +32,7 @@ export default function Sidebar({ userRole }) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/history', label: 'Riwayat', icon: History },
     { href: '/profile/location', label: 'Lokasi Rumah', icon: MapPin },
-    { href: '/profile', label: 'Profil', icon: User },
+    { href: '/profile', label: 'Profil', icon: User, exact: true },
   ];
 
   const menuItems = userRole === 'SSO' ? adminMenuItems : userMenuItems;
