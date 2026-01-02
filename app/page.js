@@ -71,7 +71,8 @@ export default function LandingPage() {
             <Shield className="w-8 h-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">SiagaSekitar</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <ThemeToggle />
             <Link href="/login">
               <Button variant="ghost">Masuk</Button>
             </Link>
