@@ -408,6 +408,23 @@ async function handleDeleteCategory(request, user, categoryId) {
   }
 }
 
+// POST /api/categories/:id/restore - Admin only (Restore soft deleted)
+async function handleRestoreCategory(request, user, categoryId) {
+  if (user.role !== 'SSO') return forbidden();
+
+  try {
+    await prisma.disasterCategory.update({
+      where: { id: categoryId },
+      data: { deletedAt: null }
+    });
+
+    return NextResponse.json({ message: 'Kategori berhasil dipulihkan' });
+  } catch (error) {
+    console.error('Restore category error:', error);
+    return NextResponse.json({ error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
 // GET /api/events
 async function handleGetEvents(request, user) {
   try {
