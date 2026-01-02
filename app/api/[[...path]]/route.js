@@ -169,7 +169,6 @@ async function handleGetUsers(request, user) {
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
       ...(search && {
         OR: [
           { email: { contains: search, mode: 'insensitive' } },
@@ -193,9 +192,13 @@ async function handleGetUsers(request, user) {
           kecamatan: true,
           kota: true,
           lastLoginAt: true,
+          deletedAt: true,
           createdAt: true
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: [
+          { deletedAt: 'asc' },  // null first (active users)
+          { createdAt: 'desc' }
+        ]
       }),
       prisma.user.count({ where })
     ]);
