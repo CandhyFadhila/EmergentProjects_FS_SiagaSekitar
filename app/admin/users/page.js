@@ -152,6 +152,22 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleRestore = async (userId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/restore`, { method: 'POST' });
+      const data = await response.json();
+      
+      if (response.ok) {
+        showToast.success('Berhasil', data.message);
+        fetchUsers();
+      } else {
+        showToast.error('Error', data.error);
+      }
+    } catch (error) {
+      showToast.error('Error', 'Terjadi kesalahan');
+    }
+  };
+
   const columns = [
     {
       header: 'Nama',
