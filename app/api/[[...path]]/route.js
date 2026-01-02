@@ -402,14 +402,20 @@ async function handleGetEvents(request, user) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
+    const search = searchParams.get('search') || '';
     const status = searchParams.get('status');
     const categoryId = searchParams.get('categoryId');
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
       ...(status && { status }),
-      ...(categoryId && { categoryId })
+      ...(categoryId && { categoryId }),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } }
+        ]
+      })
     };
 
     const [events, total] = await Promise.all([
@@ -432,7 +438,10 @@ async function handleGetEvents(request, user) {
             }
           }
         },
-        orderBy: { eventTime: 'desc' }
+        orderBy: [
+          { deletedAt: 'asc' },  // null first (active events)
+          { eventTime: 'desc' }
+        ]
       }),
       prisma.disasterEvent.count({ where })
     ]);
