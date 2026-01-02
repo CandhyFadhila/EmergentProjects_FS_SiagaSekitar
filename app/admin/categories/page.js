@@ -48,7 +48,7 @@ export default function AdminCategoriesPage() {
       setCategories(data.categories || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
-      toast({ title: 'Error', description: 'Gagal memuat data kategori', variant: 'destructive' });
+      showToast.error('Error', 'Gagal memuat data kategori');
     } finally {
       setLoading(false);
     }
