@@ -118,24 +118,42 @@ export default function AdminCategoriesPage() {
     {
       header: 'Kode',
       accessorKey: 'code',
-      cell: (row) => <span className="font-mono font-bold">{row.code}</span>
+      cell: (row) => (
+        <span className={`font-mono font-bold ${row.deletedAt ? 'opacity-40' : ''}`}>
+          {row.code}
+        </span>
+      )
     },
     {
       header: 'Nama',
       accessorKey: 'name',
-      cell: (row) => <span className="font-medium">{row.name}</span>
+      cell: (row) => (
+        <span className={`font-medium ${row.deletedAt ? 'opacity-40' : ''}`}>
+          {row.name}
+        </span>
+      )
     },
     {
       header: 'Deskripsi',
       accessorKey: 'description',
-      cell: (row) => <span className="text-sm text-muted-foreground">{row.description || '-'}</span>
+      cell: (row) => (
+        <span className={`text-sm text-muted-foreground ${row.deletedAt ? 'opacity-40' : ''}`}>
+          {row.description || '-'}
+        </span>
+      )
     },
     {
       header: 'Status',
       cell: (row) => (
-        <Badge variant={row.isActive ? 'default' : 'secondary'}>
-          {row.isActive ? 'Aktif' : 'Nonaktif'}
-        </Badge>
+        <div className={row.deletedAt ? 'opacity-40' : ''}>
+          {row.deletedAt ? (
+            <Badge variant="destructive">Dihapus</Badge>
+          ) : (
+            <Badge variant={row.isActive ? 'default' : 'secondary'}>
+              {row.isActive ? 'Aktif' : 'Nonaktif'}
+            </Badge>
+          )}
+        </div>
       )
     },
     {
@@ -143,13 +161,14 @@ export default function AdminCategoriesPage() {
       className: 'text-right',
       cell: (row) => (
         <TooltipProvider>
-          <div className="flex justify-end gap-2">
+          <div className={`flex justify-end gap-2 ${row.deletedAt ? 'opacity-40 pointer-events-none' : ''}`}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => handleOpenDialog('edit', row)}
+                  disabled={!!row.deletedAt}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -165,6 +184,7 @@ export default function AdminCategoriesPage() {
                   size="sm"
                   variant="destructive"
                   onClick={() => setDeleteDialog({ open: true, categoryId: row.id })}
+                  disabled={!!row.deletedAt}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
