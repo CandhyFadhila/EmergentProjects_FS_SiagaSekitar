@@ -20,6 +20,7 @@ import {
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function SidebarContent({ userRole, pathname, onLinkClick }) {
   const adminMenuItems = [
