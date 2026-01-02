@@ -324,10 +324,12 @@ export default function AdminEventsPage() {
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </TooltipTrigger>
-              <TooltipContent>
-                <p>Hapus Pengumuman</p>
-              </TooltipContent>
-            </Tooltip>
+                  <TooltipContent>
+                    <p>Hapus Pengumuman</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
           </div>
         </TooltipProvider>
       )
