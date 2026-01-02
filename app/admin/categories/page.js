@@ -223,6 +223,8 @@ export default function AdminCategoriesPage() {
           <DataTable
             columns={columns}
             data={categories}
+            onSearch={fetchCategories}
+            searchPlaceholder="Cari kode atau nama kategori..."
           />
         </div>
       </div>
