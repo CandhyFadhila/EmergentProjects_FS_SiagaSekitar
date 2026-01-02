@@ -98,14 +98,15 @@ export default function ProfilePage() {
     <div className="flex h-screen bg-background">
       <Sidebar userRole="USER" />
       
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Profil Saya</h1>
-            <p className="text-muted-foreground">Informasi akun dan pengaturan</p>
+      {/* Main Content - with padding top for mobile header */}
+      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+        <div className="p-4 md:p-6 lg:p-8">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Profil Saya</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Informasi akun dan pengaturan</p>
           </div>
 
-          <div className="grid gap-6 max-w-2xl">
+          <div className="grid gap-4 md:gap-6 max-w-2xl">
             <Card>
               <CardHeader>
                 <CardTitle>Informasi Akun</CardTitle>
