@@ -272,6 +272,7 @@ export default function AdminEventsPage() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleOpenDialog('edit', row)}
+                  disabled={!!row.deletedAt}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -286,6 +287,7 @@ export default function AdminEventsPage() {
                   size="sm"
                   variant="destructive"
                   onClick={() => setDeleteDialog({ open: true, eventId: row.id })}
+                  disabled={!!row.deletedAt}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
