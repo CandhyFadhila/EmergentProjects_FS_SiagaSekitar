@@ -75,7 +75,8 @@ function SidebarContent({ userRole, pathname, onLinkClick }) {
       </nav>
 
       <div className="p-4 border-t border-border">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 gap-2">
+          <LanguageToggle />
           <ThemeToggle />
         </div>
         <Button
