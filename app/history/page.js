@@ -55,17 +55,18 @@ export default function UserHistoryPage() {
     <div className="flex h-screen bg-background">
       <Sidebar userRole="USER" />
       
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-8">
-          <div className="mb-8 flex justify-between items-center">
+      {/* Main Content - with padding top for mobile header */}
+      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+        <div className="p-4 md:p-6 lg:p-8">
+          <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Riwayat Kejadian</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Riwayat Kejadian</h1>
+              <p className="text-sm md:text-base text-muted-foreground">
                 {nearHome ? 'Kejadian bencana di sekitar lokasi Anda' : 'Semua kejadian bencana'}
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Label htmlFor="near-home">Sekitar Rumah</Label>
+              <Label htmlFor="near-home" className="text-sm">Sekitar Rumah</Label>
               <Switch
                 id="near-home"
                 checked={nearHome}
