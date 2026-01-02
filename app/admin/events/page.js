@@ -189,6 +189,22 @@ export default function AdminEventsPage() {
     }
   };
 
+  const handleRestore = async (eventId) => {
+    try {
+      const response = await fetch(`/api/events/${eventId}/restore`, { method: 'POST' });
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({ title: 'Berhasil', description: data.message });
+        fetchEvents();
+      } else {
+        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+    }
+  };
+
   const columns = [
     {
       header: 'Judul',
