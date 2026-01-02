@@ -747,6 +747,23 @@ async function handleDeleteEvent(request, user, eventId) {
   }
 }
 
+// POST /api/events/:id/restore - Admin only
+async function handleRestoreEvent(request, user, eventId) {
+  if (user.role !== 'SSO') return forbidden();
+
+  try {
+    await prisma.disasterEvent.update({
+      where: { id: eventId },
+      data: { deletedAt: null, status: 'DRAFT' }
+    });
+
+    return NextResponse.json({ message: 'Event berhasil dipulihkan' });
+  } catch (error) {
+    console.error('Restore event error:', error);
+    return NextResponse.json({ error: 'Terjadi kesalahan' }, { status: 500 });
+  }
+}
+
 // GET /api/notifications
 async function handleGetNotifications(request, user) {
   try {
