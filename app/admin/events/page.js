@@ -194,7 +194,7 @@ export default function AdminEventsPage() {
       header: 'Judul',
       accessorKey: 'title',
       cell: (row) => (
-        <div>
+        <div className={row.deletedAt ? 'opacity-40' : ''}>
           <div className="font-medium">{row.title}</div>
           <div className="text-xs text-muted-foreground">{row.category.name}</div>
         </div>
@@ -202,12 +202,16 @@ export default function AdminEventsPage() {
     },
     {
       header: 'Waktu Kejadian',
-      cell: (row) => format(new Date(row.eventTime), 'dd MMM yyyy HH:mm', { locale: id })
+      cell: (row) => (
+        <span className={row.deletedAt ? 'opacity-40' : ''}>
+          {format(new Date(row.eventTime), 'dd MMM yyyy HH:mm', { locale: id })}
+        </span>
+      )
     },
     {
       header: 'Lokasi',
       cell: (row) => (
-        <div className="text-sm">
+        <div className={`text-sm ${row.deletedAt ? 'opacity-40' : ''}`}>
           {row.kelurahan && <div>{row.kelurahan}</div>}
           {row.kota && <div className="text-muted-foreground">{row.kota}</div>}
         </div>
@@ -216,7 +220,7 @@ export default function AdminEventsPage() {
     {
       header: 'Radius',
       cell: (row) => (
-        <div className="text-sm">
+        <div className={`text-sm ${row.deletedAt ? 'opacity-40' : ''}`}>
           <div className="text-red-600">Bahaya: {row.dangerRadiusM}m</div>
           <div className="text-orange-600">Peringatan: {row.warningRadiusM}m</div>
         </div>
@@ -225,13 +229,19 @@ export default function AdminEventsPage() {
     {
       header: 'Status',
       cell: (row) => (
-        <Badge variant={
-          row.status === 'PUBLISHED' ? 'default' : 
-          row.status === 'DRAFT' ? 'secondary' : 
-          'destructive'
-        }>
-          {row.status}
-        </Badge>
+        <div className={row.deletedAt ? 'opacity-40' : ''}>
+          {row.deletedAt ? (
+            <Badge variant="destructive">Dihapus</Badge>
+          ) : (
+            <Badge variant={
+              row.status === 'PUBLISHED' ? 'default' : 
+              row.status === 'DRAFT' ? 'secondary' : 
+              'destructive'
+            }>
+              {row.status}
+            </Badge>
+          )}
+        </div>
       )
     },
     {
@@ -239,8 +249,8 @@ export default function AdminEventsPage() {
       className: 'text-right',
       cell: (row) => (
         <TooltipProvider>
-          <div className="flex justify-end gap-2">
-            {row.status === 'DRAFT' && (
+          <div className={`flex justify-end gap-2 ${row.deletedAt ? 'opacity-40 pointer-events-none' : ''}`}>
+            {row.status === 'DRAFT' && !row.deletedAt && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
