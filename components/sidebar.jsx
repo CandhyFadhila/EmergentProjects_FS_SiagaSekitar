@@ -21,10 +21,7 @@ import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
-export default function Sidebar({ userRole }) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
+function SidebarContent({ userRole, pathname, onLinkClick }) {
   const adminMenuItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/users', label: 'Manajemen User', icon: Users },
@@ -37,13 +34,13 @@ export default function Sidebar({ userRole }) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/history', label: 'Riwayat', icon: History },
     { href: '/profile/location', label: 'Lokasi Rumah', icon: MapPin },
-    { href: '/profile', label: 'Profil', icon: User, exact: true },
+    { href: '/profile', label: 'Profil', icon: User },
   ];
 
   const menuItems = userRole === 'SSO' ? adminMenuItems : userMenuItems;
 
   return (
-    <div className="flex flex-col h-screen w-64 bg-sidebar border-r border-border">
+    <>
       <div className="p-6 border-b border-border">
         <h1 className="text-2xl font-bold text-sidebar-foreground">SiagaSekitar</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -51,16 +48,16 @@ export default function Sidebar({ userRole }) {
         </p>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          // Fix: Exact match untuk semua menu item
           const isActive = pathname === item.href;
           
           return (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onLinkClick}
               className={cn(
                 'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
                 isActive
@@ -85,6 +82,43 @@ export default function Sidebar({ userRole }) {
           <span>Keluar</span>
         </Button>
       </div>
-    </div>
+    </>
+  );
+}
+
+export default function Sidebar({ userRole }) {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* Mobile Header with Hamburger */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center px-4">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="mr-2">
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <SidebarContent 
+              userRole={userRole} 
+              pathname={pathname} 
+              onLinkClick={() => setOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
+        <h1 className="text-xl font-bold">SiagaSekitar</h1>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex flex-col h-screen w-64 bg-sidebar border-r border-border">
+        <SidebarContent 
+          userRole={userRole} 
+          pathname={pathname} 
+          onLinkClick={() => {}}
+        />
+      </div>
+    </>
   );
 }
