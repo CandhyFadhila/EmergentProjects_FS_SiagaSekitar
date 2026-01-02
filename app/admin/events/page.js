@@ -265,49 +265,65 @@ export default function AdminEventsPage() {
       className: 'text-right',
       cell: (row) => (
         <TooltipProvider>
-          <div className={`flex justify-end gap-2 ${row.deletedAt ? 'opacity-40 pointer-events-none' : ''}`}>
-            {row.status === 'DRAFT' && !row.deletedAt && (
+          <div className="flex justify-end gap-2">
+            {row.deletedAt ? (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     size="sm"
-                    variant="default"
-                    onClick={() => setPublishDialog({ open: true, eventId: row.id })}
+                    variant="outline"
+                    onClick={() => handleRestore(row.id)}
+                    className="text-green-600 hover:text-green-700"
                   >
-                    <Send className="w-4 h-4" />
+                    <RotateCcw className="w-4 h-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Publish & Kirim Notifikasi</p>
+                  <p>Pulihkan Pengumuman</p>
                 </TooltipContent>
               </Tooltip>
-            )}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleOpenDialog('edit', row)}
-                  disabled={!!row.deletedAt}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit Pengumuman</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => setDeleteDialog({ open: true, eventId: row.id })}
-                  disabled={!!row.deletedAt}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
+            ) : (
+              <>
+                {row.status === 'DRAFT' && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => setPublishDialog({ open: true, eventId: row.id })}
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Publish & Kirim Notifikasi</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenDialog('edit', row)}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit Pengumuman</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => setDeleteDialog({ open: true, eventId: row.id })}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
               <TooltipContent>
                 <p>Hapus Pengumuman</p>
               </TooltipContent>
