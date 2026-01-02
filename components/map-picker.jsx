@@ -248,11 +248,9 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
       
       if (dangerCircleRef.current) {
         dangerCircleRef.current.setLatLng(newLatLng);
-        dangerCircleRef.current.setRadius(dangerRadius || 0);
       }
       if (warningCircleRef.current) {
         warningCircleRef.current.setLatLng(newLatLng);
-        warningCircleRef.current.setRadius(warningRadius || 0);
       }
 
       // Smart pan: Only pan if marker is outside current view
@@ -264,7 +262,17 @@ export default function MapPicker({ lat, lng, onLocationChange, onAddressChange,
         });
       }
     }
-  }, [lat, lng, dangerRadius, warningRadius]);
+  }, [lat, lng]);
+
+  // Update circle radius when dangerRadius or warningRadius changes
+  useEffect(() => {
+    if (dangerCircleRef.current && dangerRadius) {
+      dangerCircleRef.current.setRadius(dangerRadius);
+    }
+    if (warningCircleRef.current && warningRadius) {
+      warningCircleRef.current.setRadius(warningRadius);
+    }
+  }, [dangerRadius, warningRadius]);
 
   return (
     <div>
