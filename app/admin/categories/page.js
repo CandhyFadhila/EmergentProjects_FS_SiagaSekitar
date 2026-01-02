@@ -38,7 +38,7 @@ export default function AdminCategoriesPage() {
     }
 
     fetchCategories();
-  }, [status, session, router]);
+  }, [status, session]);
 
   const fetchCategories = async (search = '') => {
     setLoading(true);
