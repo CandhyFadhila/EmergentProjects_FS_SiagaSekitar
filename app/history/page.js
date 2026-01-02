@@ -85,20 +85,20 @@ export default function UserHistoryPage() {
             ) : (
               events.map((event) => (
                 <Card key={event.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                       <div className="p-3 rounded-lg bg-orange-100 dark:bg-orange-900">
                         <AlertTriangle className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
                           <div>
-                            <h3 className="font-semibold text-lg">{event.title}</h3>
+                            <h3 className="font-semibold text-base md:text-lg">{event.title}</h3>
                             <Badge className="mt-1">{event.category.name}</Badge>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-3">{event.description}</p>
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground mb-3">{event.description}</p>
+                        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-xs md:text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             <span>{format(new Date(event.eventTime), 'dd MMM yyyy HH:mm', { locale: id })}</span>
