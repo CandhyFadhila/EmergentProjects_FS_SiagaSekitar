@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -12,13 +13,17 @@ import {
   LogOut,
   Bell,
   MapPin,
-  User
+  User,
+  Menu,
+  X
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Sidebar({ userRole }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   const adminMenuItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
