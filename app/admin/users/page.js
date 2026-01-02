@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
     }
 
     fetchUsers();
-  }, [status, session, router, pagination.page]);
+  }, [status, session, pagination.page]);
 
   const fetchUsers = async (search = '') => {
     setLoading(true);
