@@ -75,12 +75,13 @@ export default function LandingPage() {
             <h1 className="text-2xl font-bold text-foreground">SiagaSekitar</h1>
           </div>
           <div className="flex gap-3 items-center">
+            <LanguageToggle />
             <ThemeToggle />
             <Link href="/login">
-              <Button variant="ghost">Masuk</Button>
+              <Button variant="ghost">{t('login')}</Button>
             </Link>
             <Link href="/register">
-              <Button>Daftar</Button>
+              <Button>{t('register')}</Button>
             </Link>
           </div>
         </div>
