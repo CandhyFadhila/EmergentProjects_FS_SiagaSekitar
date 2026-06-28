@@ -14,6 +14,12 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function LoginPage() {
   const router = useRouter();
+  const demoAccounts = [
+    { label: 'Admin SSO', email: 'admin@sso.local', password: 'Admin12345!' },
+    { label: 'Bupati Magetan', email: 'bupatimagetan@userbupati.com', password: 'bupatimagetan' },
+    { label: 'Kepala Dinas Kebudayaan dan Pariwisata Provinsi Jawa Timur', email: 'kepala.dinas.pariwisata.jatim@userpariwisata.com', password: 'pariwisatajatim' },
+    { label: 'Kepala Dinas Pendidikan Provinsi Jawa Timur', email: 'kepala.dinas.pendidikan.jatim@userpendidikan.com', password: 'pendidikanjatim' },
+  ];
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -105,9 +111,21 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 p-4 bg-muted rounded-lg">
-            <p className="text-sm font-medium mb-2">Demo Accounts:</p>
-            <p className="text-xs text-muted-foreground">Admin: admin@sso.local / Admin12345!</p>
-            <p className="text-xs text-muted-foreground">User: user1@test.com / User12345!</p>
+            <p className="text-sm font-medium mb-2">Akun Demo (klik untuk mengisi):</p>
+            <div className="space-y-1.5">
+              {demoAccounts.map((acc) => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => setFormData({ email: acc.email, password: acc.password })}
+                  className="w-full text-left p-2 rounded-md bg-background hover:bg-accent transition-colors border border-border"
+                >
+                  <p className="text-xs font-medium text-foreground">{acc.label}</p>
+                  <p className="text-[11px] text-muted-foreground break-all">{acc.email}</p>
+                  <p className="text-[11px] text-muted-foreground">Password: {acc.password}</p>
+                </button>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>

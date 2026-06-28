@@ -845,31 +845,36 @@ async function handleAdminDashboard(request, user) {
       }
     });
 
-    // Events by kelurahan
-    const eventsByKelurahan = await prisma.$queryRaw`
-      SELECT kelurahan, COUNT(*)::int as count
-      FROM disaster_events
-      WHERE deleted_at IS NULL 
-        AND status = 'PUBLISHED'
-        AND event_time >= ${dateFrom}
-        AND kelurahan IS NOT NULL
-      GROUP BY kelurahan
-      ORDER BY count DESC
-      LIMIT 10
-    `;
+    // Fetch published events in range (with category) for aggregation
+    const rangeEvents = await prisma.disasterEvent.findMany({
+      where: {
+        status: 'PUBLISHED',
+        deletedAt: null,
+        eventTime: { gte: dateFrom }
+      },
+      include: { category: true }
+    });
+
+    // Events by kelurahan (top 10)
+    const kelurahanCount = {};
+    for (const e of rangeEvents) {
+      if (!e.kelurahan) continue;
+      kelurahanCount[e.kelurahan] = (kelurahanCount[e.kelurahan] || 0) + 1;
+    }
+    const eventsByKelurahan = Object.entries(kelurahanCount)
+      .map(([kelurahan, count]) => ({ kelurahan, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
 
     // Events by category
-    const eventsByCategory = await prisma.$queryRaw`
-      SELECT c.name, COUNT(e.id)::int as count
-      FROM disaster_events e
-      JOIN disaster_categories c ON e.category_id = c.id
-      WHERE e.deleted_at IS NULL 
-        AND e.status = 'PUBLISHED'
-        AND e.event_time >= ${dateFrom}
-        AND c.deleted_at IS NULL
-      GROUP BY c.name
-      ORDER BY count DESC
-    `;
+    const catCount = {};
+    for (const e of rangeEvents) {
+      if (!e.category || e.category.deletedAt) continue;
+      catCount[e.category.name] = (catCount[e.category.name] || 0) + 1;
+    }
+    const eventsByCategory = Object.entries(catCount)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
 
     return NextResponse.json({
       totalUsers,
