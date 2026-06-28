@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { showToast } from '@/lib/toast-helper';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { User, Mail, MapPin, Calendar } from 'lucide-react';
@@ -16,7 +16,6 @@ import { User, Mail, MapPin, Calendar } from 'lucide-react';
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -44,7 +43,7 @@ export default function ProfilePage() {
       setProfile(data.profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      toast({ title: 'Error', description: 'Gagal memuat data profil', variant: 'destructive' });
+      showToast.error('Error', 'Gagal memuat data profil');
     } finally {
       setLoading(false);
     }
@@ -54,12 +53,12 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast({ title: 'Error', description: 'Password baru dan konfirmasi tidak cocok', variant: 'destructive' });
+      showToast.error('Error', 'Password baru dan konfirmasi tidak cocok');
       return;
     }
 
     if (passwordForm.newPassword.length < 8) {
-      toast({ title: 'Error', description: 'Password harus minimal 8 karakter', variant: 'destructive' });
+      showToast.error('Error', 'Password harus minimal 8 karakter');
       return;
     }
 
@@ -78,13 +77,13 @@ export default function ProfilePage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
         setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     } finally {
       setSaving(false);
     }

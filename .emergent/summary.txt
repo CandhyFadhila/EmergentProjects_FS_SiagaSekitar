@@ -1,120 +1,126 @@
 <analysis>
-<original_problem_statement>
-The user wants to build a full-stack web application called SiagaSekitar for location-based natural disaster notifications (landslides, earthquakes, floods, tsunamis) in Indonesia.
 
-**PRODUCT REQUIREMENTS:**
-- **UI Language**: Indonesian.
-- **Roles &amp; Access**:
-    - **SSO (Admin)**: User management (soft delete, password reset), CRUD for disaster categories, CRUD for disaster announcements (events), dashboard with statistics, and a history log of all disasters.
-    - **USER**: Standard auth (login, logout, self-service password reset), a dashboard showing relevant disasters near their home, and a personal disaster history log.
-- **Core Location Concept**:
-    - Users have a home location (lat/lon).
-    - Disaster events have a location, a , and a .
-    - Users within the  receive a notification. Priority is DANGER if within , otherwise WARNING.
-- **Notifications**:
-    - In-app notifications are mandatory.
-    - Email notifications are conditional. They should **ONLY** be sent if  environment variable is . Otherwise, log them as .
-- **Authentication**:
-    - Email/password-based, with hashed passwords (bcrypt).
-    - Admins can reset user passwords to a default.
-    - Users can register and set their home location via a map.
-- **Data Model &amp; Tech Stack**:
-    - **Database**: PostgreSQL with PostGIS extension for spatial queries (e.g., ).
-    - **Primary Keys**: UUID.
-    - **Timestamps**: All tables must have , .
-    - **Soft Deletes**: All tables must have a nullable  column. All queries must respect this.
-    - **Backend**: Next.js API Routes.
-    - **ORM**: Prisma.
-    - **Frontend**: Next.js (App Router), React, TypeScript, TailwindCSS, shadcn/ui.
-    - **Maps**: Leaflet with OpenStreetMap.
-    - **Charts**: Recharts.
-- **Business Flow**:
-    - When an Admin **publishes** a disaster event, the system must query all users within the warning radius, determine their priority, and create  records for each one.
-- **UI/UX**:
-    - Modern, responsive design.
-    - Admins get a sidebar layout with data tables (search, filter, pagination).
-    - Users get a dashboard with summary cards, charts, and lists.
-    - Map for picking home location and viewing event radii.
+<original_problem_statement>
+The user wants to build a full-stack web application called SiagaSekitar for location-based natural disaster notifications in Indonesia.
+
+**PRODUCT REQUIREMENTS (based on initial request and subsequent user messages):**
+- **UI Language**: Primarily Indonesian. A multi-language (ID/EN) feature was requested but then immediately rejected by the user and needs to be removed.
+- **Core Functionality**:
+    - A public landing page showing recent disaster events to non-logged-in users.
+    - User registration and login.
+    - Two user roles: Admin (SSO) and User.
+- **Admin Panel**:
+    - User management (CRUD, soft delete, restore, password reset).
+    - Disaster category management (CRUD, soft delete, restore).
+    - Disaster announcement/event management (CRUD, soft delete, restore, publish).
+    - Admin pages must display soft-deleted items at the bottom of tables, with a faded appearance, and provide a restore option.
+    - All admin data tables should have search functionality.
+    - An interactive map (Leaflet) for creating events, where changing the radius inputs should visually update the circles on the map.
+    - Dashboard with statistics and a history log.
+- **User Dashboard**:
+    - Must be responsive and mobile-friendly, with a hamburger menu for navigation on small screens.
+    - Dashboard showing disasters relevant to the user's home location.
+    - Profile and home location management.
+    - Personal disaster history log.
+- **Technical &amp; UX Requirements**:
+    - **Tech Stack**: Next.js (App Router), React, TypeScript, TailwindCSS, shadcn/ui, PostgreSQL with PostGIS, Prisma ORM.
+    - **UI Theme**: A dark mode toggle must be available on all pages (landing page, auth pages, dashboards).
+    - **Notifications**: In-app toast notifications should be color-coded: green for success, red for error, and yellow/orange for warnings. These colors must work in both light and dark modes.
+    - **Bug Fix**: An issue causing the application to reload data whenever the browser tab regained focus must be fixed.
 </original_problem_statement>
 
 **User's preferred language**: Bahasa Indonesia
 
 **what currently exists?**
-The agent has successfully set up the project's foundation. This includes migrating the tech stack from the default MongoDB to PostgreSQL with PostGIS as requested. The Prisma ORM is configured (after downgrading to v5 for stability), and the database schema for all required tables (, , etc.) has been created and seeded with initial data.
+The application is nearly feature-complete based on the user's requests. The initial project setup (PostgreSQL, Prisma) is done. A public landing page, full user/admin authentication, and dashboards for both roles have been built. The agent has successfully implemented:
+- A responsive user dashboard with a hamburger menu for mobile.
+- A full dark mode theme toggle across the entire application.
+- A soft-delete system in all admin panels, where deleted items are shown as faded, sorted to the bottom, and can be restored.
+- Search functionality on admin pages.
+- A fix for a bug where changing radius inputs on the event map didn't update the visualization.
+- An improved, color-coded toast notification system using a central helper ().
+- A fix for an application-wide bug that caused pages to reload data on tab focus change.
 
-A significant portion of the frontend and backend has been built out. This includes:
-- A complete, monolithic API handler () for all CRUD operations, authentication, and dashboard data.
-- User and Admin authentication using NextAuth.
-- Frontend pages for both Admin and User roles, including dashboards, user management, event management, and category management.
-- Key UI components like a  with location search (using Leaflet and leaflet-geosearch) and reverse geocoding to auto-fill address fields.
-- Custom-colored toast notifications for user feedback.
-- Tooltips for UI buttons and a user detail/edit modal for the admin panel.
+The last major task was an attempt to add multi-language support, which failed and was rejected by the user.
 
 **Last working item**:
-    - Last item agent was working on: Fixing a UI bug in the user dashboard's sidebar where both the Profil and Lokasi Rumah menu items are highlighted simultaneously when the user navigates to the  page. The agent identified the issue was due to a broad  check that matched both menu items. An initial fix was attempted but the user confirmed the bug persists. The agent was about to attempt a more robust fix before the session ended.
+    - Last item agent was working: The user reported three issues: 1) Toast notification colors were unreadable in dark mode, 2) The app reloaded on tab focus, and 3) A request for a new multi-language feature. The agent fixed the toast colors, fixed the reload bug, and implemented the multi-language feature. However, the user then reported that the multi-language feature was not working and the toast colors were still broken. The agent's very last action was to begin the process of removing the non-functional multi-language feature and re-addressing the toast color bug.
     - Status: IN PROGRESS
-    - Agent Testing Done: N
+    - Agent Testing Done: N (The agent did not visually verify the toast color fix in dark mode after implementing it.)
     - Which testing method agent to use? screenshot tool
-    - User Testing Done: Y
+    - User Testing Done: Y (User confirmed that the toast colors and multi-language features are broken.)
 
 **All Pending/In progress Issue list**:
-  - Issue 1: Sidebar highlights multiple menu items incorrectly (P0)
-
+  - Issue 1: Toast notifications are unreadable in dark mode (P0)
+  
   Issues Detail:
   - Issue 1: 
-     - **Description**: On the user dashboard, when navigating to a nested page like , the parent menu item () and the child menu item () are both highlighted as active. This is confusing for the user.
-     - **Attempted fixes**: The agent's first attempt likely involved changing the active state logic from  to a strict equality check . This seems to have failed, as the user reported the issue was still present. The agent's last thought was to implement a more robust logic by checking for more specific paths first, but this was not implemented.
+     - **Description**: After implementing custom colors for success, error, and warning toasts, the text color does not adapt correctly in dark mode, making the notifications unreadable (e.g., dark text on a dark background).
+     - **Attempted fixes**: The agent modified  to add dark mode-specific text colors like . This fix was unsuccessful, as reported by the user.
      - **Next debug checklist**:
          1. Open .
-         2. Locate the mapping function that renders the navigation links.
-         3. The logic that determines the  state (and thus the  prop of the ) is the source of the bug.
-         4. **Proposed Fix**: Modify the condition to be an exact match: . This is the most straightforward solution and should correctly highlight only one item. It's possible the previous agent's attempt to implement this had a syntax error or was incomplete.
-     - **Why fix this issue and what will be achieved with the fix?**: Fixing this will provide clear visual feedback to the user about their current location within the application, improving navigation and overall UX.
+         2. Review the  strings for each toast type (, , ).
+         3. The issue is likely that while a  variant was added for , a  color was not specified for dark mode, or the light-mode background is overriding it.
+         4. **Proposed Fix**: For each toast type, define explicit background and text colors for both light and dark modes. For example, for success: . This ensures contrast in both themes.
+     - **Why fix this issue and what will be achieved with the fix?**: This is critical for user experience. Without it, users in dark mode cannot read feedback messages (like Success or Error), making the application difficult to use.
      - **Status**: IN PROGRESS
      - **Is recurring issue?** Y
      - **Should Test frontend/backend/both after fix?**: Frontend
      - **Blocked on other issue**: No
 
 **In progress Task List**:
-- None.
+  - Task 1: Remove the multi-language (i18n) feature (P0)
+
+ Task Detail:
+  - Task 1: 
+     - **Description**: The user requested the removal of the recently added multi-language feature because it was not functional.
+     - **Where to resume**: 
+        1. Delete the files created for this feature: , , and .
+        2. Revert changes in  to remove the  wrapper.
+        3. Revert changes in  (landing page) and  to remove the import and usage of the  component.
+     - **What will be achieved with this?**: This will fulfill a direct user request to remove a broken feature and simplify the codebase.
+     - **Status**: IN PROGRESS
+     - **Should Test frontend/backend/both after fix?**: Frontend
+     - **Blocked on something**: No
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks**:
-    - **(P1) Implement and Test Event Publishing Flow**: The core business logic of publishing a  and automatically generating  needs to be fully tested. This involves verifying the PostGIS query () in  in  works correctly to find users in the radius and creates the corresponding notification logs.
-    - **(P1) Verify Dashboard Statistics**: Test the data aggregation endpoints (, ) to ensure the statistics shown on the admin and user dashboards are accurate.
-    - **(P1) Implement User History Toggle**: The user's history page () needs the Sekitar Rumah / Semua toggle to be functional, allowing users to filter disaster events. This requires an API modification to accept a filter parameter.
-    - **(P2) Implement Remaining Auth Features**: Implement and test the self-service password reset for users and the admin's ability to reset a user's password.
-    - **(P2) Apply Custom Toast Notifications Globally**: The agent created a  and a guide () but did not replace all  calls throughout the application. This needs to be completed for consistent UI feedback.
-    - **(P2) Verify Soft Delete Implementation**: Ensure all data retrieval queries across the application correctly filter out records where  is not null.
+    - **(P1) Verify Auto-Reload Fix**: The agent fixed a bug causing data to re-fetch on tab focus by removing  from  dependency arrays in admin pages. This fix needs to be verified on user-facing pages (, , ) as well and confirmed to have no side effects.
+    - **(P1) Implement and Test Event Publishing Flow**: The core business logic of publishing a  and generating  via the PostGIS query in  has not been explicitly tested.
+    - **(P2) Implement Remaining Auth Features**: The self-service password reset for users and the admin's ability to reset a user's password are still pending.
 
 - **Future Tasks**:
-    - **(P3) Implement Audit Logging**: The  table exists in the schema, but there is no logic to populate it. This can be implemented to track important actions performed by admins.
-    - **(P3) Refactor Monolithic API**: The single API file  is over 1100 lines. It should be refactored into multiple, resource-specific route files (e.g., , ) for better maintainability.
+    - **(P3) Refactor Monolithic API**: The API file  is now extremely large and complex. It should be refactored into resource-specific route files for maintainability.
+    - **(P3) Implement Audit Logging**: The  table exists but is not being populated. Logic should be added to log key admin actions.
 
 **Completed work in this session**
-- **Tech Stack Migration**: Switched from a MongoDB template to the required PostgreSQL + PostGIS stack.
-- **Database Setup**: Initialized the database, configured Prisma (downgraded to v5), defined the complete schema, and ran migrations.
-- **Data Seeding**: Created and executed a seed script to populate the database with initial admin/user accounts and disaster categories/events.
-- **Authentication**: Implemented user registration and login via NextAuth with credentials provider.
-- **API Development**: Created a comprehensive (though monolithic) set of API endpoints to handle all required CRUD and business logic.
-- **Frontend Development**: Built out the majority of pages for both Admin and User roles using Next.js and shadcn/ui.
-- **Map Integration**: Implemented a  component using Leaflet with location search and reverse geocoding to auto-fill address forms.
-- **UI Enhancements**: Added tooltips to action buttons and created a system for colored toast notifications based on message type (success, error, warning).
-- **Feature Addition**: Added a user detail view/edit modal for admins.
-- **Bug Fixing**: Addressed several bugs in the  component related to map view and marker pinning.
+- **Bug Fix**: Fixed sidebar menu items being incorrectly highlighted simultaneously.
+- **Feature**: Created a public landing page with a list of recent disaster events.
+- **Feature**: Implemented a responsive user dashboard with a mobile-friendly hamburger menu.
+- **Critical Recovery**: Installed and configured PostgreSQL with PostGIS from scratch, ran migrations, and seeded the database after discovering the environment was not set up.
+- **Bug Fix**: Fixed a bug where the map's radius visualization did not update when radius input values were changed.
+- **Feature**: Implemented a site-wide dark mode with a theme toggle.
+- **Feature**: Added search functionality to the admin categories page.
+- **Feature**: Implemented a comprehensive soft-delete system for all admin tables, including:
+    - Displaying deleted items with a faded style.
+    - Sorting deleted items to the bottom of tables.
+    - Adding a Restore functionality for deleted items.
+- **Refactor**: Replaced all direct  calls with a new, centralized, color-coded .
+- **Bug Fix**: Fixed a bug that caused pages to auto-reload data upon browser tab focus change.
 
 - **Recently completed**:
-  - Map search feature with reverse geocoding (DONE)
-  - User detail modal for admin (DONE)
-  - Tooltips on action buttons (DONE)
-  - Custom colored toast notifications (Partially Implemented - Helper created, needs global application)
-  - Map interaction bug fixes (DONE)
+  - Soft-delete view with sorting and restore functionality (DONE)
+  - Color-coded toast notification system (DONE, but has a bug in dark mode)
+  - Auto-reload on focus bug fix (DONE, needs full verification)
+  - Dark mode implementation (DONE)
+  - Landing page implementation (DONE)
+  - User dashboard responsive UI (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-   - The primary issue is the **Sidebar active state bug** as detailed in the .
+- The **Toast notification dark mode color bug** is the only outstanding issue from previous user feedback in this session.
 
 **Known issue recurrence from previous fork**
-  - N/A
+- N/A
 
 **Code Architecture**
 
@@ -124,86 +130,77 @@ A significant portion of the frontend and backend has been built out. This inclu
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL with PostGIS extension
 - **ORM**: Prisma 5
-- **Authentication**: NextAuth.js (Credentials Provider)
-- **Mapping**: Leaflet, React-Leaflet, OpenStreetMap, leaflet-geosearch (for address search)
-- **Architecture**: Full-stack monolith within a Next.js project. API logic is centralized in a single catch-all route.
+- **Authentication**: NextAuth.js
+- **Mapping**: Leaflet, React-Leaflet
+- **UI Theming**:  for dark mode support
 
 **key DB schema**
-  - **users**: {id, role, full_name, email, password_hash, home_point (GEOGRAPHY), kelurahan, ...}
-  - **disaster_categories**: {id, code, name, description, ...}
-  - **disaster_events**: {id, category_id, title, event_time, location_point (GEOGRAPHY), danger_radius_m, warning_radius_m, ...}
-  - **user_notifications**: {id, user_id, event_id, priority, distance_m, email_status, read_at, ...}
-  - **audit_logs**: {id, actor_id, action, entity_type, ...} (Schema exists, but not used)
+- **users**: {id, role, full_name, email, password_hash, home_point, ..., deleted_at}
+- **disaster_categories**: {id, name, description, ..., deleted_at}
+- **disaster_events**: {id, category_id, title, event_time, location_point, danger_radius_m, ..., deleted_at}
+- **user_notifications**: {id, user_id, event_id, priority, ...}
 
 **changes in tech stack**
-  - The project was migrated from the default **MongoDB** to **PostgreSQL + PostGIS** to fulfill the user's requirement for spatial queries.
-  - The agent attempted to use Prisma v7 but encountered instability and **downgraded to Prisma v5**.
+-  library was added to support dark mode.
 
 **All files of reference**
-- : A critical, monolithic file containing handlers for almost all backend logic (CRUD, dashboards, etc.). It's the heart of the application's backend.
-- : Defines the entire database structure.
-- : Contains the initial data for the application.
-- : A complex component that handles map display, marker pinning, location search, and reverse geocoding.
-- : The component containing the bug that needs to be fixed.
-- : Example of a complex admin page with a data table, modals, and user interaction logic.
-- : The new helper for displaying styled toast notifications.
-- : A document created by the agent explaining how to use the new toast helper.
+- : This file was significantly updated to provide styled, color-coded toast notifications. It is the source of the current high-priority bug.
+- : Heavily modified to support search, soft-delete views (returning all items instead of filtering by ), and new restore endpoints for all admin-managed entities. The sorting logic was also updated here.
+- , , : All were updated to add search inputs, restore buttons, conditional styling for deleted rows, and to use the new . The  hooks were modified to fix the auto-reload bug.
+- : Updated to be responsive with a hamburger menu and to include the theme toggle.
+- : Updated to wrap the application in the .
+- : Overwritten to become the new public landing page.
+- : Updated with a  to fix the radius circle visualization bug.
 
 **Areas that need refactoring**:
-- The monolithic API file  is extremely long and hard to maintain. It should be broken down into separate files based on the Next.js App Router's conventions (e.g., , ).
-- The use of  and string concatenation for raw queries in the API file is a potential SQL injection risk and should be refactored to use parameterized queries () correctly, if possible with Prisma 5's UUID handling.
+- The monolithic API file  has grown even larger and is now the highest priority for refactoring in the future to improve maintainability.
 
 **key api endpoints**
-All endpoints are handled by  and routed internally. Key logical routes include:
+New logical routes handled by :
 - 
 - 
 - 
 - 
-- 
-- 
-- 
-- 
-- 
-- 
+The  endpoints for , , and  now support a  query parameter.
 
 **Critical Info for New Agent**
 - **Language**: You must respond to the user in **Bahasa Indonesia**.
-- **Prisma Version**: The project uses Prisma v5. Do not upgrade to a newer version without a clear reason, as the previous agent faced issues.
-- **Monolithic API**: Be aware that nearly all backend logic resides in . When adding or debugging API features, you will likely be editing this file.
-- **Raw SQL Queries**: The code uses  with string interpolation for some queries involving PostGIS. This was a workaround for issues with UUID binding. Be cautious when modifying these queries.
-- **Email Logic**: Email sending is intentionally disabled via the  environment variable. The logic should correctly log notifications as  but not attempt to send any emails.
+- **Priority Tasks**: The highest priorities are to 1) remove the failed multi-language feature as requested by the user, and 2) fix the unreadable toast notifications in dark mode. Do these first.
+- **Rejected Feature**: Do not attempt to re-implement or fix the multi-language feature. The user has explicitly asked for its removal.
+- **Monolithic API**: Be aware that all backend logic is in . Any new API changes will likely be made here.
 
 **documents created in this job**
-  - : A guide on how to use the custom toast notification helper.
+- None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Reports a bug where both Profil and Lokasi Rumah are highlighted in the sidebar. (COMPLETION: PENDING)
-2.  **Agent**: Acknowledges the bug and identifies the cause.
-3.  **Agent**: Tries a fix.
-4.  **User**: Reports the bug is still present with another screenshot. (COMPLETION: PENDING)
-5.  **Agent**: Acknowledges the fix failed and thinks about a more robust solution. (This is where the history ends)
-6.  **User**: Reports that after fixing the map pan, the marker disappears from view when pinned. (COMPLETION: RESOLVED)
-7.  **Agent**: Identifies the cause (pan was removed entirely) and implements a smart pan to only pan when the marker is out of view.
-8.  **User**: Reports a new bug where the pin jumps around after being placed. (COMPLETION: RESOLVED)
-9.  **Agent**: Identifies a feedback loop and fixes it by using a ref to track user interactions vs. programmatic updates.
-10. **User**: Reports the sidebar bug again (this is the same as #1, but a separate message in the flow). (COMPLETION: PENDING)
+1.  **User**: Asks for improved toast notification colors (green/red/yellow). (COMPLETION: PARTIALLY DONE, BUGGED)
+2.  **User**: Reports three new issues: 1) Toast colors are broken in dark mode, 2) App reloads on tab focus, 3) Requests multi-language support. (COMPLETION: IN PROGRESS)
+3.  **Agent**: Acknowledges and starts working on all three items.
+4.  **Agent**: Fixes toast colors, fixes reload bug, and implements multi-language.
+5.  **User**: Rejects the solution. Reports that multi-language does not work and asks for its removal. Reports that toast colors are still broken. (COMPLETION: PENDING)
+6.  **Agent**: Acknowledges the failures and plans to remove the multi-language feature and re-fix the toast colors. (This is where the history ends).
+7.  **User**: Asks for search on categories page and soft-delete view on all admin pages. (COMPLETION: DONE)
+8.  **User**: Reports deleted items are not sorted correctly and requests a restore feature. (COMPLETION: DONE)
+9.  **User**: Reports a server crash on the  page. (COMPLETION: RESOLVED)
+10. **User**: Provides a list of final requests including improved toast notifications. (This message is a duplicate summary of previous requests).
 
 **Project Health Check:**
-- **Broken**: The user dashboard sidebar's active state logic is broken.
-- **Mocked**: Email sending is intentionally disabled via an environment variable (), which is part of the requirements. No other features are mocked.
+- **Broken**: Toast notifications are unreadable in dark mode.
+- **Mocked**: Email sending is intentionally disabled via  as per original requirements.
 
 **3rd Party Integrations**
--  & : For displaying interactive maps.
-- : For adding an address search provider to the Leaflet map.
-- : For displaying charts on the dashboards.
-- : For hashing passwords.
-- : For handling authentication sessions.
+-  &amp; : For interactive maps.
+- : For address search on the map.
+- : For dashboard charts.
+- : For password hashing.
+- : For authentication.
+- : For dark mode support.
 
 **Testing status**
-  - Testing agent used after significant changes: NO
-  - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: []
-  - Known regressions: The sidebar active state was likely broken by an attempt to fix another issue or by the addition of new menu items without adjusting the logic.
+- Testing agent used after significant changes: NO
+- Troubleshoot agent used after agent stuck in loop: NO
+- Test files created: []
+- Known regressions: The styling of toast notifications in dark mode is broken.
 
 **Credentials to test flow:**
 - **Admin**:
@@ -212,16 +209,9 @@ All endpoints are handled by  and routed internally. Key logical routes include:
 - **User**:
   - Email: 
   - Password: 
-  or
-  - Email: 
-  - Password: 
 
 **What agent forgot to execute**
-- The agent did not apply the new  function globally across all relevant files, leaving a  instead.
-- Core business logic like the event publishing flow and the accuracy of dashboard statistics has been implemented but not explicitly tested or verified by the user.
-- The user-facing feature to toggle history view (Semua vs. Sekitar Rumah) was created on the frontend but the backend logic and toggle functionality were not completed.
+- The agent failed to properly test the toast color fix in dark mode before presenting it to the user.
+- The agent did not fully verify the fix for the auto-reload bug across all user-facing pages, only admin pages were modified.
+
 </analysis>
-<SYS_PROMPT_SEPARATOR>
-<workspace_dir>
-/app
-</workspace_dir>

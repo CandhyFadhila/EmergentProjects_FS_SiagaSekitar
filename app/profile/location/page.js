@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { showToast } from '@/lib/toast-helper';
 import dynamic from 'next/dynamic';
 
 const MapPicker = dynamic(() => import('@/components/map-picker'), {
@@ -19,7 +19,6 @@ const MapPicker = dynamic(() => import('@/components/map-picker'), {
 export default function ProfileLocationPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -62,7 +61,7 @@ export default function ProfileLocationPage() {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      toast({ title: 'Error', description: 'Gagal memuat data profil', variant: 'destructive' });
+      showToast.error('Error', 'Gagal memuat data profil');
     } finally {
       setLoading(false);
     }
@@ -82,12 +81,12 @@ export default function ProfileLocationPage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast({ title: 'Berhasil', description: data.message });
+        showToast.success('Berhasil', data.message);
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        showToast.error('Error', data.error);
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Terjadi kesalahan', variant: 'destructive' });
+      showToast.error('Error', 'Terjadi kesalahan');
     } finally {
       setSaving(false);
     }
@@ -191,6 +190,11 @@ export default function ProfileLocationPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+    </div>
+  );
+}
+v>
       </div>
     </div>
   );

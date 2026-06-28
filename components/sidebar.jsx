@@ -21,7 +21,6 @@ import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { LanguageToggle } from '@/components/language-toggle';
 
 function SidebarContent({ userRole, pathname, onLinkClick }) {
   const adminMenuItems = [
@@ -75,8 +74,7 @@ function SidebarContent({ userRole, pathname, onLinkClick }) {
       </nav>
 
       <div className="p-4 border-t border-border">
-        <div className="flex items-center justify-between mb-2 gap-2">
-          <LanguageToggle />
+        <div className="flex items-center justify-end mb-2 gap-2">
           <ThemeToggle />
         </div>
         <Button

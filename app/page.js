@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { LanguageToggle } from '@/components/language-toggle';
-import { useLanguage } from '@/lib/language-context';
 import { 
   Bell, 
   MapPin, 
@@ -23,7 +21,6 @@ export default function LandingPage() {
   const [recentDisasters, setRecentDisasters] = useState([]);
   const [stats, setStats] = useState({ total: 0, categories: 0, users: 0 });
   const [loading, setLoading] = useState(true);
-  const { t } = useLanguage();
 
   useEffect(() => {
     fetchPublicData();
@@ -75,13 +72,12 @@ export default function LandingPage() {
             <h1 className="text-2xl font-bold text-foreground">SiagaSekitar</h1>
           </div>
           <div className="flex gap-3 items-center">
-            <LanguageToggle />
             <ThemeToggle />
             <Link href="/login">
-              <Button variant="ghost">{t('login')}</Button>
+              <Button variant="ghost">Masuk</Button>
             </Link>
             <Link href="/register">
-              <Button>{t('register')}</Button>
+              <Button>Daftar</Button>
             </Link>
           </div>
         </div>
