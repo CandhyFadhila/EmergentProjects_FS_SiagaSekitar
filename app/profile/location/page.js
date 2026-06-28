@@ -194,8 +194,3 @@ export default function ProfileLocationPage() {
     </div>
   );
 }
-v>
-      </div>
-    </div>
-  );
-}
