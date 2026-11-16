@@ -1,27 +1,52 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/sidebar';
-import DataTable from '@/components/data-table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast';
-import { showToast } from '@/lib/toast-helper';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
-import { Trash2, RefreshCw, Eye, RotateCcw } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Sidebar from "@/components/sidebar";
+import DataTable from "@/components/data-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
+import { showToast } from "@/lib/toast-helper";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { Trash2, RefreshCw, Eye, RotateCcw } from "lucide-react";
+import dynamic from "next/dynamic";
 
-const MapPicker = dynamic(() => import('@/components/map-picker'), {
+const MapPicker = dynamic(() => import("@/components/map-picker"), {
   ssr: false,
-  loading: () => <div className="w-full h-[400px] bg-muted rounded-lg flex items-center justify-center">Memuat peta...</div>
+  loading: () => (
+    <div className="w-full h-[400px] bg-muted rounded-lg flex items-center justify-center">
+      Memuat peta...
+    </div>
+  ),
 });
 
 export default function AdminUsersPage() {
@@ -29,44 +54,59 @@ export default function AdminUsersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [users, setUsers] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
   const [loading, setLoading] = useState(true);
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, userId: null });
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    userId: null,
+  });
   const [resetDialog, setResetDialog] = useState({ open: false, userId: null });
-  const [detailDialog, setDetailDialog] = useState({ open: false, user: null, isEditing: false });
+  const [temporaryPassword, setTemporaryPassword] = useState("");
+  const [detailDialog, setDetailDialog] = useState({
+    open: false,
+    user: null,
+    isEditing: false,
+  });
   const [formData, setFormData] = useState({
     homeLat: -7.6298,
     homeLng: 111.5239,
-    kelurahan: '',
-    kecamatan: '',
-    kota: '',
-    provinsi: ''
+    kelurahan: "",
+    kecamatan: "",
+    kota: "",
+    provinsi: "",
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (status === "unauthenticated") {
+      router.push("/login");
       return;
     }
 
-    if (session?.user?.role !== 'SSO') {
-      router.push('/dashboard');
+    if (session?.user?.role !== "SSO") {
+      router.push("/dashboard");
       return;
     }
 
     fetchUsers();
   }, [status, session, pagination.page]);
 
-  const fetchUsers = async (search = '') => {
+  const fetchUsers = async (search = "") => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/users?page=${pagination.page}&limit=${pagination.limit}&search=${search}`);
+      const response = await fetch(
+        `/api/users?page=${pagination.page}&limit=${pagination.limit}&search=${search}`,
+      );
       const data = await response.json();
       setUsers(data.users || []);
       setPagination(data.pagination);
     } catch (error) {
-      console.error('Error fetching users:', error);
-      showToast.error('Error', 'Gagal memuat data users');
+      console.error("Error fetching users:", error);
+      showToast.error("Error", "Gagal memuat data users");
     } finally {
       setLoading(false);
     }
@@ -76,60 +116,65 @@ export default function AdminUsersPage() {
     try {
       const response = await fetch(`/api/users/${userId}/detail`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setDetailDialog({ open: true, user: data.user, isEditing: false });
         setFormData({
           homeLat: data.user.homeLat,
           homeLng: data.user.homeLng,
-          kelurahan: data.user.kelurahan || '',
-          kecamatan: data.user.kecamatan || '',
-          kota: data.user.kota || '',
-          provinsi: data.user.provinsi || ''
+          kelurahan: data.user.kelurahan || "",
+          kecamatan: data.user.kecamatan || "",
+          kota: data.user.kota || "",
+          provinsi: data.user.provinsi || "",
         });
       } else {
-        showToast.error('Error', data.error);
+        showToast.error("Error", data.error);
       }
     } catch (error) {
-      showToast.error('Error', 'Terjadi kesalahan');
+      showToast.error("Error", "Terjadi kesalahan");
     }
   };
 
   const handleUpdateUser = async () => {
     try {
-      const response = await fetch(`/api/users/${detailDialog.user.id}/update`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      
+      const response = await fetch(
+        `/api/users/${detailDialog.user.id}/update`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
+
       const data = await response.json();
-      
+
       if (response.ok) {
-        showToast.success('Berhasil', data.message);
+        showToast.success("Berhasil", data.message);
         setDetailDialog({ open: false, user: null, isEditing: false });
         fetchUsers();
       } else {
-        showToast.error('Error', data.error);
+        showToast.error("Error", data.error);
       }
     } catch (error) {
-      showToast.error('Error', 'Terjadi kesalahan');
+      showToast.error("Error", "Terjadi kesalahan");
     }
   };
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/users/${deleteDialog.userId}`, { method: 'DELETE' });
+      const response = await fetch(`/api/users/${deleteDialog.userId}`, {
+        method: "DELETE",
+      });
       const data = await response.json();
-      
+
       if (response.ok) {
-        showToast.success('Berhasil', data.message);
+        showToast.success("Berhasil", data.message);
         fetchUsers();
       } else {
-        showToast.error('Error', data.error);
+        showToast.error("Error", data.error);
       }
     } catch (error) {
-      showToast.error('Error', 'Terjadi kesalahan');
+      showToast.error("Error", "Terjadi kesalahan");
     } finally {
       setDeleteDialog({ open: false, userId: null });
     }
@@ -137,16 +182,27 @@ export default function AdminUsersPage() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch(`/api/users/${resetDialog.userId}/reset-password`, { method: 'POST' });
+      const response = await fetch(
+        `/api/users/${resetDialog.userId}/reset-password`,
+        {
+          method: "POST",
+          cache: "no-store",
+        },
+      );
+
       const data = await response.json();
-      
-      if (response.ok) {
-        showToast.success('Berhasil', data.message);
+
+      if (response.ok && data.temporaryPassword) {
+        setTemporaryPassword(data.temporaryPassword);
+        showToast.success("Berhasil", "Password pengguna berhasil direset");
       } else {
-        showToast.error('Error', data.error);
+        showToast.error(
+          "Error",
+          data.error || "Password sementara tidak tersedia",
+        );
       }
     } catch (error) {
-      showToast.error('Error', 'Terjadi kesalahan');
+      showToast.error("Error", "Terjadi kesalahan saat reset password");
     } finally {
       setResetDialog({ open: false, userId: null });
     }
@@ -154,76 +210,88 @@ export default function AdminUsersPage() {
 
   const handleRestore = async (userId) => {
     try {
-      const response = await fetch(`/api/users/${userId}/restore`, { method: 'POST' });
+      const response = await fetch(`/api/users/${userId}/restore`, {
+        method: "POST",
+      });
       const data = await response.json();
-      
+
       if (response.ok) {
-        showToast.success('Berhasil', data.message);
+        showToast.success("Berhasil", data.message);
         fetchUsers();
       } else {
-        showToast.error('Error', data.error);
+        showToast.error("Error", data.error);
       }
     } catch (error) {
-      showToast.error('Error', 'Terjadi kesalahan');
+      showToast.error("Error", "Terjadi kesalahan");
     }
   };
 
   const columns = [
     {
-      header: 'Nama',
-      accessorKey: 'fullName',
-      cell: (row) => <span className={`font-medium ${row.deletedAt ? 'opacity-40' : ''}`}>{row.fullName}</span>
-    },
-    {
-      header: 'Email',
-      accessorKey: 'email',
-      cell: (row) => <span className={row.deletedAt ? 'opacity-40' : ''}>{row.email}</span>
-    },
-    {
-      header: 'Role',
-      accessorKey: 'role',
+      header: "Nama",
+      accessorKey: "fullName",
       cell: (row) => (
-        <div className={row.deletedAt ? 'opacity-40' : ''}>
-          <Badge variant={row.role === 'SSO' ? 'default' : 'secondary'}>
+        <span className={`font-medium ${row.deletedAt ? "opacity-40" : ""}`}>
+          {row.fullName}
+        </span>
+      ),
+    },
+    {
+      header: "Email",
+      accessorKey: "email",
+      cell: (row) => (
+        <span className={row.deletedAt ? "opacity-40" : ""}>{row.email}</span>
+      ),
+    },
+    {
+      header: "Role",
+      accessorKey: "role",
+      cell: (row) => (
+        <div className={row.deletedAt ? "opacity-40" : ""}>
+          <Badge variant={row.role === "SSO" ? "default" : "secondary"}>
             {row.role}
           </Badge>
         </div>
-      )
+      ),
     },
     {
-      header: 'Lokasi',
+      header: "Lokasi",
       cell: (row) => (
-        <div className={`text-sm ${row.deletedAt ? 'opacity-40' : ''}`}>
+        <div className={`text-sm ${row.deletedAt ? "opacity-40" : ""}`}>
           {row.kelurahan && <div>{row.kelurahan}</div>}
           {row.kota && <div className="text-muted-foreground">{row.kota}</div>}
         </div>
-      )
+      ),
     },
     {
-      header: 'Status',
+      header: "Status",
       cell: (row) => (
-        <div className={row.deletedAt ? 'opacity-40' : ''}>
+        <div className={row.deletedAt ? "opacity-40" : ""}>
           {row.deletedAt ? (
             <Badge variant="destructive">Dihapus</Badge>
           ) : (
-            <Badge variant={row.isActive ? 'default' : 'secondary'}>
-              {row.isActive ? 'Aktif' : 'Nonaktif'}
+            <Badge variant={row.isActive ? "default" : "secondary"}>
+              {row.isActive ? "Aktif" : "Nonaktif"}
             </Badge>
           )}
         </div>
-      )
+      ),
     },
     {
-      header: 'Last Login',
+      header: "Last Login",
       cell: (row) => (
-        <span className={row.deletedAt ? 'opacity-40' : ''}>
-          {row.lastLoginAt ? format(new Date(row.lastLoginAt), 'dd MMM yyyy HH:mm', { locale: id }) : '-'}
+        <span className={row.deletedAt ? "opacity-40" : ""}>
+          {row.lastLoginAt
+            ? format(new Date(row.lastLoginAt), "dd MMM yyyy HH:mm", {
+                locale: id,
+              })
+            : "-"}
         </span>
-      )
+      ),
     },
     {
-      header: 'Aksi',
-      className: 'text-right',
+      header: "Aksi",
+      className: "text-right",
       cell: (row) => (
         <TooltipProvider>
           <div className="flex justify-end gap-2">
@@ -265,7 +333,9 @@ export default function AdminUsersPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setResetDialog({ open: true, userId: row.id })}
+                      onClick={() =>
+                        setResetDialog({ open: true, userId: row.id })
+                      }
                     >
                       <RefreshCw className="w-4 h-4" />
                     </Button>
@@ -280,7 +350,9 @@ export default function AdminUsersPage() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => setDeleteDialog({ open: true, userId: row.id })}
+                      onClick={() =>
+                        setDeleteDialog({ open: true, userId: row.id })
+                      }
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -293,18 +365,20 @@ export default function AdminUsersPage() {
             )}
           </div>
         </TooltipProvider>
-      )
-    }
+      ),
+    },
   ];
 
-  if (status === 'loading' || loading) {
-    return <div className="flex items-center justify-center h-screen">Memuat...</div>;
+  if (status === "loading" || loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">Memuat...</div>
+    );
   }
 
   return (
     <div className="flex h-screen bg-background">
       <Sidebar userRole="SSO" />
-      
+
       <div className="flex-1 overflow-y-auto">
         <div className="p-8">
           <div className="mb-8">
@@ -324,16 +398,21 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Detail & Edit User Dialog */}
-      <Dialog open={detailDialog.open} onOpenChange={(open) => {
-        if (!open) {
-          setDetailDialog({ open: false, user: null, isEditing: false });
-        }
-      }}>
+      <Dialog
+        open={detailDialog.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDetailDialog({ open: false, user: null, isEditing: false });
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Detail User</DialogTitle>
             <DialogDescription>
-              {detailDialog.isEditing ? 'Edit informasi user (kecuali email, password, dan nama)' : 'Informasi lengkap user'}
+              {detailDialog.isEditing
+                ? "Edit informasi user (kecuali email, password, dan nama)"
+                : "Informasi lengkap user"}
             </DialogDescription>
           </DialogHeader>
 
@@ -344,7 +423,9 @@ export default function AdminUsersPage() {
                 <h3 className="font-semibold">Informasi User</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-muted-foreground">Nama Lengkap</Label>
+                    <Label className="text-muted-foreground">
+                      Nama Lengkap
+                    </Label>
                     <p className="font-medium">{detailDialog.user.fullName}</p>
                   </div>
                   <div>
@@ -354,7 +435,13 @@ export default function AdminUsersPage() {
                   <div>
                     <Label className="text-muted-foreground">Role</Label>
                     <div>
-                      <Badge variant={detailDialog.user.role === 'SSO' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          detailDialog.user.role === "SSO"
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
                         {detailDialog.user.role}
                       </Badge>
                     </div>
@@ -362,23 +449,37 @@ export default function AdminUsersPage() {
                   <div>
                     <Label className="text-muted-foreground">Status</Label>
                     <div>
-                      <Badge variant={detailDialog.user.isActive ? 'default' : 'secondary'}>
-                        {detailDialog.user.isActive ? 'Aktif' : 'Nonaktif'}
+                      <Badge
+                        variant={
+                          detailDialog.user.isActive ? "default" : "secondary"
+                        }
+                      >
+                        {detailDialog.user.isActive ? "Aktif" : "Nonaktif"}
                       </Badge>
                     </div>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Bergabung Sejak</Label>
+                    <Label className="text-muted-foreground">
+                      Bergabung Sejak
+                    </Label>
                     <p className="font-medium">
-                      {format(new Date(detailDialog.user.createdAt), 'dd MMMM yyyy', { locale: id })}
+                      {format(
+                        new Date(detailDialog.user.createdAt),
+                        "dd MMMM yyyy",
+                        { locale: id },
+                      )}
                     </p>
                   </div>
                   <div>
                     <Label className="text-muted-foreground">Last Login</Label>
                     <p className="font-medium">
-                      {detailDialog.user.lastLoginAt 
-                        ? format(new Date(detailDialog.user.lastLoginAt), 'dd MMM yyyy HH:mm', { locale: id })
-                        : 'Belum pernah login'}
+                      {detailDialog.user.lastLoginAt
+                        ? format(
+                            new Date(detailDialog.user.lastLoginAt),
+                            "dd MMM yyyy HH:mm",
+                            { locale: id },
+                          )
+                        : "Belum pernah login"}
                     </p>
                   </div>
                 </div>
@@ -389,10 +490,12 @@ export default function AdminUsersPage() {
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold">Informasi Lokasi</h3>
                   {!detailDialog.isEditing && (
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
-                      onClick={() => setDetailDialog({ ...detailDialog, isEditing: true })}
+                      onClick={() =>
+                        setDetailDialog({ ...detailDialog, isEditing: true })
+                      }
                     >
                       Edit Lokasi
                     </Button>
@@ -404,21 +507,26 @@ export default function AdminUsersPage() {
                     <div className="space-y-2">
                       <Label>Titik Lokasi Rumah</Label>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Gunakan search box atau klik/drag marker untuk mengubah lokasi. Alamat akan terisi otomatis!
+                        Gunakan search box atau klik/drag marker untuk mengubah
+                        lokasi. Alamat akan terisi otomatis!
                       </p>
                       <MapPicker
                         lat={formData.homeLat}
                         lng={formData.homeLng}
                         onLocationChange={(lat, lng) => {
-                          setFormData({ ...formData, homeLat: lat, homeLng: lng });
+                          setFormData({
+                            ...formData,
+                            homeLat: lat,
+                            homeLng: lng,
+                          });
                         }}
                         onAddressChange={(addressData) => {
-                          setFormData({ 
-                            ...formData, 
+                          setFormData({
+                            ...formData,
                             kelurahan: addressData.kelurahan,
                             kecamatan: addressData.kecamatan,
                             kota: addressData.kota,
-                            provinsi: addressData.provinsi
+                            provinsi: addressData.provinsi,
                           });
                         }}
                       />
@@ -430,7 +538,12 @@ export default function AdminUsersPage() {
                         <Input
                           id="kelurahan"
                           value={formData.kelurahan}
-                          onChange={(e) => setFormData({ ...formData, kelurahan: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              kelurahan: e.target.value,
+                            })
+                          }
                           placeholder="Nama kelurahan"
                         />
                       </div>
@@ -440,7 +553,12 @@ export default function AdminUsersPage() {
                         <Input
                           id="kecamatan"
                           value={formData.kecamatan}
-                          onChange={(e) => setFormData({ ...formData, kecamatan: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              kecamatan: e.target.value,
+                            })
+                          }
                           placeholder="Nama kecamatan"
                         />
                       </div>
@@ -450,7 +568,9 @@ export default function AdminUsersPage() {
                         <Input
                           id="kota"
                           value={formData.kota}
-                          onChange={(e) => setFormData({ ...formData, kota: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, kota: e.target.value })
+                          }
                           placeholder="Nama kota"
                         />
                       </div>
@@ -460,7 +580,12 @@ export default function AdminUsersPage() {
                         <Input
                           id="provinsi"
                           value={formData.provinsi}
-                          onChange={(e) => setFormData({ ...formData, provinsi: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              provinsi: e.target.value,
+                            })
+                          }
                           placeholder="Nama provinsi"
                         />
                       </div>
@@ -471,24 +596,35 @@ export default function AdminUsersPage() {
                     <div>
                       <Label className="text-muted-foreground">Koordinat</Label>
                       <p className="font-medium font-mono text-sm">
-                        {detailDialog.user.homeLat.toFixed(6)}, {detailDialog.user.homeLng.toFixed(6)}
+                        {detailDialog.user.homeLat.toFixed(6)},{" "}
+                        {detailDialog.user.homeLng.toFixed(6)}
                       </p>
                     </div>
                     <div>
                       <Label className="text-muted-foreground">Kelurahan</Label>
-                      <p className="font-medium">{detailDialog.user.kelurahan || '-'}</p>
+                      <p className="font-medium">
+                        {detailDialog.user.kelurahan || "-"}
+                      </p>
                     </div>
                     <div>
                       <Label className="text-muted-foreground">Kecamatan</Label>
-                      <p className="font-medium">{detailDialog.user.kecamatan || '-'}</p>
+                      <p className="font-medium">
+                        {detailDialog.user.kecamatan || "-"}
+                      </p>
                     </div>
                     <div>
-                      <Label className="text-muted-foreground">Kota/Kabupaten</Label>
-                      <p className="font-medium">{detailDialog.user.kota || '-'}</p>
+                      <Label className="text-muted-foreground">
+                        Kota/Kabupaten
+                      </Label>
+                      <p className="font-medium">
+                        {detailDialog.user.kota || "-"}
+                      </p>
                     </div>
                     <div>
                       <Label className="text-muted-foreground">Provinsi</Label>
-                      <p className="font-medium">{detailDialog.user.provinsi || '-'}</p>
+                      <p className="font-medium">
+                        {detailDialog.user.provinsi || "-"}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -499,18 +635,22 @@ export default function AdminUsersPage() {
           <DialogFooter>
             {detailDialog.isEditing ? (
               <>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setDetailDialog({ ...detailDialog, isEditing: false })}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setDetailDialog({ ...detailDialog, isEditing: false })
+                  }
                 >
                   Batal
                 </Button>
-                <Button onClick={handleUpdateUser}>
-                  Simpan Perubahan
-                </Button>
+                <Button onClick={handleUpdateUser}>Simpan Perubahan</Button>
               </>
             ) : (
-              <Button onClick={() => setDetailDialog({ open: false, user: null, isEditing: false })}>
+              <Button
+                onClick={() =>
+                  setDetailDialog({ open: false, user: null, isEditing: false })
+                }
+              >
                 Tutup
               </Button>
             )}
@@ -518,35 +658,111 @@ export default function AdminUsersPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
+      <AlertDialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Nonaktifkan User</AlertDialogTitle>
             <AlertDialogDescription>
-              Apakah Anda yakin ingin menonaktifkan user ini? User tidak akan bisa login lagi.
+              Apakah Anda yakin ingin menonaktifkan user ini? User tidak akan
+              bisa login lagi.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Nonaktifkan</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete}>
+              Nonaktifkan
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={resetDialog.open} onOpenChange={(open) => setResetDialog({ ...resetDialog, open })}>
+      <AlertDialog
+        open={resetDialog.open}
+        onOpenChange={(open) => setResetDialog({ ...resetDialog, open })}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Reset Password</AlertDialogTitle>
             <AlertDialogDescription>
-              Password user akan direset menjadi default: <strong>12345678</strong>
+              Sistem akan membuat password sementara yang aman dan acak.
+              Password lama pengguna tidak dapat digunakan lagi setelah reset.
+              Pastikan password sementara disampaikan kepada pengguna melalui
+              saluran komunikasi yang aman.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleResetPassword}>Reset</AlertDialogAction>
+            <AlertDialogAction onClick={handleResetPassword}>
+              Reset
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog
+        open={Boolean(temporaryPassword)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTemporaryPassword("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Password Berhasil Direset</DialogTitle>
+            <DialogDescription>
+              Salin password sementara berikut dan sampaikan kepada pengguna
+              melalui saluran komunikasi yang aman. Password tidak akan
+              ditampilkan kembali setelah dialog ditutup.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label>Password Sementara</Label>
+
+            <Input
+              value={temporaryPassword}
+              readOnly
+              autoComplete="off"
+              className="font-mono"
+              onFocus={(e) => e.target.select()}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setTemporaryPassword("")}
+            >
+              Tutup
+            </Button>
+
+            <Button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(temporaryPassword);
+                  showToast.success(
+                    "Berhasil",
+                    "Password sementara berhasil disalin",
+                  );
+                } catch (error) {
+                  showToast.error(
+                    "Gagal menyalin",
+                    "Silakan salin password secara manual",
+                  );
+                }
+              }}
+            >
+              Salin Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
