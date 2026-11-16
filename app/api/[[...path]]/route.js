@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "node:crypto";
 import { calculateDistance, getPriority } from "@/lib/distance";
 
 // Helper to get current user from session
@@ -340,8 +341,8 @@ async function handleResetPassword(request, user, userId) {
   if (user.role !== "SSO") return forbidden();
 
   try {
-    const defaultPassword = "12345678";
-    const passwordHash = await bcrypt.hash(defaultPassword, 10);
+    const temporaryPassword = randomBytes(24).toString("base64url");
+    const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
     await prisma.user.update({
       where: { id: userId },
@@ -359,9 +360,17 @@ async function handleResetPassword(request, user, userId) {
       },
     });
 
-    return NextResponse.json({
-      message: "Password berhasil direset ke default (12345678)",
-    });
+    return NextResponse.json(
+      {
+        message: "Password berhasil direset",
+        temporaryPassword,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
+    );
   } catch (error) {
     console.error("Reset password error:", error);
     return NextResponse.json({ error: "Terjadi kesalahan" }, { status: 500 });
