@@ -1,0 +1,71 @@
+# Copy into existing /opt/siagasekitar/compose.yaml after backing up that file.
+# Preserve the original Compose project name and postgres_data volume.
+services:
+  db:
+    image: postgis/postgis:17-3.7
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - siaga_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$\${POSTGRES_USER}\" -d \"$\${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  app:
+    image: ${APP_IMAGE:?Set APP_IMAGE in .env}
+    restart: unless-stopped
+    env_file:
+      - ./app.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - siaga_network
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+  migrate:
+    profiles: ["maintenance"]
+    image: ${MIGRATE_IMAGE:?Set MIGRATE_IMAGE in .env}
+    env_file:
+      - ./app.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - siaga_network
+    restart: "no"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - siaga_network
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  siaga_network:
+    driver: bridge
