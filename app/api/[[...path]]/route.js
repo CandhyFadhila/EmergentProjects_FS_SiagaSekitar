@@ -100,11 +100,14 @@ async function handleRegister(request) {
     });
 
     // Update home_point using raw query
-    await prisma.$executeRawUnsafe(
-      `UPDATE users 
-       SET home_point = ST_SetSRID(ST_MakePoint(${user.homeLng}, ${user.homeLat}), 4326)
-       WHERE id = '${user.id}'`,
-    );
+    await prisma.$executeRaw`
+    UPDATE users
+    SET home_point = ST_SetSRID(
+      ST_MakePoint(${user.homeLng}, ${user.homeLat}),
+      4326
+    )::geography
+    WHERE id = ${user.id}
+  `;
 
     return NextResponse.json({
       message: "Registrasi berhasil",
@@ -179,11 +182,14 @@ async function handleUpdateUserLocation(request, user, userId) {
     });
 
     // Update home_point using raw query
-    await prisma.$executeRawUnsafe(
-      `UPDATE users 
-       SET home_point = ST_SetSRID(ST_MakePoint(${updated.homeLng}, ${updated.homeLat}), 4326)
-       WHERE id = '${userId}'`,
-    );
+    await prisma.$executeRaw`
+    UPDATE users
+    SET home_point = ST_SetSRID(
+      ST_MakePoint(${updated.homeLng}, ${updated.homeLat}),
+      4326
+    )::geography
+    WHERE id = ${userId}
+  `;
 
     // Log audit
     await prisma.auditLog.create({
@@ -622,11 +628,14 @@ async function handleCreateEvent(request, user) {
     });
 
     // Update location_point using raw query
-    await prisma.$executeRawUnsafe(
-      `UPDATE disaster_events 
-       SET location_point = ST_SetSRID(ST_MakePoint(${event.locationLng}, ${event.locationLat}), 4326)
-       WHERE id = '${event.id}'`,
-    );
+    await prisma.$executeRaw`
+      UPDATE disaster_events
+      SET location_point = ST_SetSRID(
+        ST_MakePoint(${event.locationLng}, ${event.locationLat}),
+        4326
+      )::geography
+      WHERE id = ${event.id}
+    `;
 
     return NextResponse.json({ message: "Event berhasil dibuat", event });
   } catch (error) {
@@ -673,12 +682,18 @@ async function handleUpdateEvent(request, user, eventId) {
     });
 
     // Update location_point if coordinates changed
-    if (locationLat && locationLng) {
-      await prisma.$executeRawUnsafe(
-        `UPDATE disaster_events 
-         SET location_point = ST_SetSRID(ST_MakePoint(${parseFloat(locationLng)}, ${parseFloat(locationLat)}), 4326)
-         WHERE id = '${eventId}'`,
-      );
+    if (locationLat != null && locationLng != null) {
+      await prisma.$executeRaw`
+        UPDATE disaster_events
+        SET location_point = ST_SetSRID(
+          ST_MakePoint(
+            ${parseFloat(locationLng)},
+            ${parseFloat(locationLat)}
+          ),
+          4326
+        )::geography
+        WHERE id = ${eventId}
+      `;
     }
 
     return NextResponse.json({ message: "Event berhasil diupdate", event });
@@ -1155,11 +1170,14 @@ async function handleUpdateLocation(request, user) {
     });
 
     // Update home_point using raw query
-    await prisma.$executeRawUnsafe(
-      `UPDATE users 
-       SET home_point = ST_SetSRID(ST_MakePoint(${updated.homeLng}, ${updated.homeLat}), 4326)
-       WHERE id = '${user.id}'`,
-    );
+    await prisma.$executeRaw`
+    UPDATE users
+    SET home_point = ST_SetSRID(
+      ST_MakePoint(${updated.homeLng}, ${updated.homeLat}),
+      4326
+    )::geography
+    WHERE id = ${user.id}
+  `;
 
     return NextResponse.json({
       message: "Lokasi berhasil diupdate",
