@@ -321,7 +321,7 @@ export default function LandingPage() {
             Platform Notifikasi Bencana Alam Indonesia
           </p>
           <p className="text-xs mt-2">
-            © 2024 SiagaSekitar. Semua hak dilindungi.
+            © 2026 SiagaSekitar. Semua hak dilindungi.
           </p>
         </div>
       </footer>
