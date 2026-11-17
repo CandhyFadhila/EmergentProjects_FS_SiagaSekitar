@@ -1,0 +1,11 @@
+[Unit]
+Description=Siaga Sekitar health check every 10 minutes
+
+[Timer]
+OnCalendar=*-*-* *:0/10:00
+Persistent=true
+AccuracySec=1min
+Unit=siaga-monitor.service
+
+[Install]
+WantedBy=timers.target

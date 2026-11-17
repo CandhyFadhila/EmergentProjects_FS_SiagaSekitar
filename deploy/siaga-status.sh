@@ -5,6 +5,7 @@ set -uo pipefail
 PROJECT_DIR="/opt/siagasekitar"
 HEALTH_URL="https://siagasekitar.tech/api/health"
 WARNINGS=0
+BACKUP_MAX_AGE_HOURS=36
 
 if [[ ! -f "$PROJECT_DIR/compose.yaml" ]]; then
   echo "ERROR: $PROJECT_DIR/compose.yaml not found." >&2
@@ -25,6 +26,12 @@ echo "Server time: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo "Uptime: $(uptime -p 2>/dev/null || uptime)"
 echo "Load average: $(awk '{print $1", "$2", "$3}' /proc/loadavg)"
 echo "CPU cores: $(nproc)"
+load5="$(awk '{print $2}' /proc/loadavg)"
+cpu_count="$(nproc)"
+if awk -v load="$load5" -v cores="$cpu_count" 'BEGIN {exit !(load >= 2*cores)}'; then
+  echo "WARNING: Five-minute load is at least twice the number of CPU cores."
+  ((WARNINGS+=1))
+fi
 echo
 echo "=== MEMORY ==="
 free -h | head -n 3
@@ -67,7 +74,7 @@ for service in app db caddy; do
   health="$(sudo docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no healthcheck{{end}}' "$cid" 2>/dev/null)"
   printf '%-8s : %s (%s)\n' "$service" "$running" "$health"
 
-  if [[ "$running" != "running" || "$health" == "unhealthy" ]]; then
+  if [[ "$running" != "running" || ( "$service" != "caddy" && "$health" != "healthy" ) ]]; then
     ((WARNINGS+=1))
   fi
   if [[ "$running" == "running" ]]; then
@@ -112,6 +119,18 @@ if [[ -n "$last_backup" ]]; then
   printf 'Latest file: %s (%s bytes)\n' \
     "$(awk '{print $2}' <<<"$last_backup")" \
     "$(awk '{print $3}' <<<"$last_backup")"
+  last_backup_epoch="$(awk '{printf "%.0f", $1}' <<<"$last_backup")"
+  last_backup_bytes="$(awk '{print $3}' <<<"$last_backup")"
+  backup_age_hours="$(( ( $(date +%s) - last_backup_epoch ) / 3600 ))"
+  echo "Backup age: $backup_age_hours hours"
+  if [[ "$last_backup_bytes" =~ ^[0-9]+$ ]] && (( last_backup_bytes == 0 )); then
+    echo "WARNING: Newest backup is empty."
+    ((WARNINGS+=1))
+  fi
+  if (( backup_age_hours > BACKUP_MAX_AGE_HOURS )); then
+    echo "WARNING: Latest backup is older than $BACKUP_MAX_AGE_HOURS hours."
+    ((WARNINGS+=1))
+  fi
 else
   echo "WARNING: No local PostgreSQL backup found."
   ((WARNINGS+=1))

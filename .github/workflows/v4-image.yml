@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+      - name: Validate deployment scripts and monitoring schedule
+        run: |
+          bash -n deploy/siaga-update.sh deploy/siaga-status.sh
+          systemd-analyze calendar '*-*-* *:0/10:00'
       - name: Set lowercase image repository
         shell: bash
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
