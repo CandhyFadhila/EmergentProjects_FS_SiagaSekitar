@@ -347,18 +347,22 @@ export default function AdminUsersPage() {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() =>
-                        setDeleteDialog({ open: true, userId: row.id })
-                      }
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <span className="inline-flex">
+                      <Button
+                        size="sm"
+                        variant={row.role === "SSO" ? "outline" : "destructive"}
+                        disabled={row.role === "SSO"}
+                        aria-label={row.role === "SSO" ? "Akun SSO dilindungi dari penghapusan" : "Nonaktifkan User"}
+                        onClick={() =>
+                          setDeleteDialog({ open: true, userId: row.id })
+                        }
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Nonaktifkan User</p>
+                    <p>{row.role === "SSO" ? "Akun SSO tidak dapat dihapus" : "Nonaktifkan User"}</p>
                   </TooltipContent>
                 </Tooltip>
               </>

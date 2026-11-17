@@ -280,17 +280,56 @@ async function handleGetUsers(request, user) {
   }
 }
 
-// DELETE /api/users/:id - Admin only (Soft delete)
+// DELETE /api/users/:id - Admin only (Soft delete; SSO accounts are protected)
 async function handleDeleteUser(request, user, userId) {
   if (user.role !== "SSO") return forbidden();
 
   try {
-    await prisma.user.update({
+    const target = await prisma.user.findUnique({
       where: { id: userId },
+      select: { role: true, deletedAt: true },
+    });
+
+    if (!target) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
+    if (target.role === "SSO") {
+      return NextResponse.json(
+        { error: "Akun SSO tidak dapat dihapus atau dinonaktifkan" },
+        { status: 403 },
+      );
+    }
+
+    if (target.deletedAt) {
+      return NextResponse.json(
+        { error: "User sudah dinonaktifkan" },
+        { status: 409 },
+      );
+    }
+
+    // Apply an atomic role condition to protect SSO even if the role changes
+    // between the lookup above and the update.
+    const result = await prisma.user.updateMany({
+      where: {
+        id: userId,
+        role: { not: "SSO" },
+        deletedAt: null,
+      },
       data: { deletedAt: new Date(), isActive: false },
     });
 
-    // Log audit
+    if (result.count !== 1) {
+      return NextResponse.json(
+        { error: "User tidak dapat dinonaktifkan; perbarui daftar pengguna" },
+        { status: 409 },
+      );
+    }
+
+    // Log audit only after a successful update.
     await prisma.auditLog.create({
       data: {
         actorId: user.id,
