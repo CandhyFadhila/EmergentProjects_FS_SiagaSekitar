@@ -113,7 +113,7 @@ export default function RegisterPage() {
                   type="text"
                   placeholder="Masukkan nama lengkap"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                   required
                 />
               </div>
@@ -125,7 +125,7 @@ export default function RegisterPage() {
                   type="email"
                   placeholder="email@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   required
                 />
               </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="Minimal 8 karakter"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   required
                 />
               </div>
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="Ulangi password"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   required
                 />
               </div>
@@ -165,16 +165,16 @@ export default function RegisterPage() {
                   lat={formData.homeLat}
                   lng={formData.homeLng}
                   onLocationChange={(lat, lng) => {
-                    setFormData({ ...formData, homeLat: lat, homeLng: lng });
+                    setFormData(prev => ({ ...prev, homeLat: lat, homeLng: lng }));
                   }}
                   onAddressChange={(addressData) => {
-                    setFormData({ 
-                      ...formData, 
+                    setFormData(prev => ({
+                      ...prev,
                       kelurahan: addressData.kelurahan,
                       kecamatan: addressData.kecamatan,
                       kota: addressData.kota,
                       provinsi: addressData.provinsi
-                    });
+                    }));
                   }}
                 />
               </div>
@@ -187,7 +187,7 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Nama kelurahan"
                     value={formData.kelurahan}
-                    onChange={(e) => setFormData({ ...formData, kelurahan: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, kelurahan: e.target.value }))}
                     required
                   />
                 </div>
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Nama kecamatan"
                     value={formData.kecamatan}
-                    onChange={(e) => setFormData({ ...formData, kecamatan: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, kecamatan: e.target.value }))}
                   />
                 </div>
 
@@ -210,7 +210,7 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Nama kota"
                     value={formData.kota}
-                    onChange={(e) => setFormData({ ...formData, kota: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, kota: e.target.value }))}
                   />
                 </div>
 
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Nama provinsi"
                     value={formData.provinsi}
-                    onChange={(e) => setFormData({ ...formData, provinsi: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, provinsi: e.target.value }))}
                   />
                 </div>
               </div>
