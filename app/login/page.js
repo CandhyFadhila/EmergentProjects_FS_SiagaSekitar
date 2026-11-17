@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -104,6 +104,14 @@ export default function LoginPage() {
             </Link>
           </div>
 
+          <div className="mt-5 border-t border-border pt-5">
+            <Button asChild variant="outline" className="w-full gap-2">
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Kembali ke Beranda
+              </Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
